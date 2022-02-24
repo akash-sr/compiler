@@ -2,7 +2,7 @@ void populate_token_map() {
 
 	FILE *fp = fopen("tokens.txt", "r");
 	fseek(fp, 0, SEEK_END);
-	int fileLength = ftell(file);
+	int fileLength = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
 
 	char *tokFile = malloc(sizeof(char) * (fileLength + 1));
@@ -16,11 +16,10 @@ void populate_token_map() {
 	fclose(fp);
 
 	char *tokens = NULL;
-	token = strtok(tokFile, ", \n");
 
   int key = 0;
-	while((token = strtok(NULL, ", \n"))!=NULL){
-		strncpy(keyToToken[key++], token, MAX_SYMBOL_LENGTH);
+	while((tokens = strtok(NULL, ", \n"))!=NULL){
+		strncpy(keyToToken[key++], tokens, MAX_SYMBOL_LENGTH);
 	}
 
 	free(tokFile);

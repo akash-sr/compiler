@@ -22,5 +22,5 @@ void populate_token_map() {
 		strncpy(keyToToken[key++], tok, MAX_SYMBOL_LENGTH);
 	}
 
-	free(tokFile);
+	free(tokens);
 }

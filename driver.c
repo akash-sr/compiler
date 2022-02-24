@@ -5,21 +5,21 @@ void populate_token_map() {
 	int fileLength = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
 
-	char *tokFile = malloc(sizeof(char) * (fileLength + 1));
-  if (tokFile == NULL) {
+	char *tokens = malloc(sizeof(char) * (fileLength + 1));
+  if (tokens == NULL) {
 		perror("terminal_string filling failed\n");
 		exit(1);
 	}
 
-	fread(tokFile, sizeof(char), fileLength, fp);
-	tokFile[fileLength] = '\0';
+	fread(tokens, sizeof(char), fileLength, fp);
+	tokens[fileLength] = '\0';
 	fclose(fp);
 
-	char *tokens = NULL;
+	char *tok = NULL;
 
   int key = 0;
-	while((tokens = strtok(NULL, ", \n"))!=NULL){
-		strncpy(keyToToken[key++], tokens, MAX_SYMBOL_LENGTH);
+	while((tok = strtok(NULL, ", \n"))!=NULL){
+		strncpy(keyToToken[key++], tok, MAX_SYMBOL_LENGTH);
 	}
 
 	free(tokFile);

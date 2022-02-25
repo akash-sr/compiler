@@ -1,0 +1,6 @@
+#ifndef DRIVER_H
+#define DRIVER_H
+#define NUM_OF_TERMINALS 60
+#define MAX_SYMBOL_LENGTH 50
+char keyToToken[NUM_OF_TERMINALS][MAX_SYMBOL_LENGTH];
+#endif

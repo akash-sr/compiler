@@ -11,15 +11,15 @@ void fill_buffer(FILE* fp) //this is the function which fills the buffer when ne
         fwd_ptr=0;
         rounds_completed++;
     }
-    // num stores the number of characters which are read. 
-    // the characters which are read are stored in an array of characters named buffer. 
+    // num stores the number of characters which are read.
+    // the characters which are read are stored in an array of characters named buffer.
     // starting from index buffer/2 or from index 0
     num = fread(&buffer[fwd_ptr],sizeof(char),buffer_length/2,fp);
     if(num == buffer_length/2)
     {
         return;
     }
-    else 
+    else
     {
         buffer[num + fwd_ptr] = EOF;
         return;

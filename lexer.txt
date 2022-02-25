@@ -1,0 +1,63 @@
+void lexer_init(FILE *source) {
+  init_hash_table(lookup_table);
+  populate_lookup_table();
+
+  state = 0;
+  lexeme_begin = 0;
+  forward_ptr = 0;
+  retract_count = 0;
+  line_no = 1;
+  num_of_rounds = 0;
+
+  int num = fseek(source, 0, SEEK_SET); // go back to start of source code file
+  populate_buffer(source);
+}
+
+
+void tokenize_source_file(FILE *source) {
+  TOKEN tkn;
+
+  printf("LINE_NUMBER", "LEXEME", "TOKEN_NAME");
+
+  if (source == NULL) {
+    printf("source null : print token stream\n");
+  }
+
+  while (true) {
+    tkn = get_next_token(source);
+    if (tkn.name == DOLLAR) {
+      break;
+    } else {
+      if (tkn.name == LEX_ERROR1) {
+        printf("==========================================================\n");
+        printf("%-15d  |  %-20s  |  %-20s\n", tkn.line_no, tkn.id.str,"This is not the valid lexeme");
+        printf("==========================================================\n");
+      } else {
+        if (tkn.name != DELIM) {
+          printf("%-15d  |  ", tkn.line_no);
+          switch (tkn.name) {
+          case TK_NUM:
+            printf("%-20d  |  ", tkn.num);
+            break;
+          case TK_RNUM:
+            printf("%-20f  |  ", tkn.rnum);
+            break;
+	  case TK_FIELDID:
+            printf("%-20f  |  ", tkn.id.str);
+            break;
+          case TK_FUNID:
+            printf("%-20f  |  ", tkn.id.str);
+            break;
+          case TK_RUID:
+            printf("%-20f  |  ", tkn.id.str);
+            break;
+          default:
+            printf("%-20s  |  ", tkn.id.str);
+            break;
+          }
+          printf("%-20s\n", terminal_string[tkn.name]);
+        }
+      }
+    }
+  } // end of while
+}

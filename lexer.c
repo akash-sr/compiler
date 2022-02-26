@@ -136,34 +136,34 @@ void retract(int numChar) {
 }
 
 void generateLookupTable(){
-    insertTable(lookup_table, "with");
-    insertTable(lookup_table, "parameters");
-    insertTable(lookup_table, "end");
-    insertTable(lookup_table, "while");
-    insertTable(lookup_table, "union");
-    insertTable(lookup_table, "endunion");
-    insertTable(lookup_table, "definetype");
-    insertTable(lookup_table, "as");
-    insertTable(lookup_table, "type");
-    insertTable(lookup_table, "_main");
-    insertTable(lookup_table, "global");
-    insertTable(lookup_table, "parameter");
-    insertTable(lookup_table, "list");
-    insertTable(lookup_table, "input");
-    insertTable(lookup_table, "output");
-    insertTable(lookup_table, "int");
-    insertTable(lookup_table, "real");
-    insertTable(lookup_table, "endwhile");
-    insertTable(lookup_table, "if");
-    insertTable(lookup_table, "then");
-    insertTable(lookup_table, "endif");
-    insertTable(lookup_table, "read");
-    insertTable(lookup_table, "write");
-    insertTable(lookup_table, "return");
-    insertTable(lookup_table, "call");
-    insertTable(lookup_table, "record");
-    insertTable(lookup_table, "endrecord");
-    insertTable(lookup_table, "else");
+    insertTable(lookup_table, "with", TK_WITH);
+    insertTable(lookup_table, "parameters", TK_PARAMETERS);
+    insertTable(lookup_table, "end", TK_END);
+    insertTable(lookup_table, "while", TK_WHILE);
+    insertTable(lookup_table, "union", TK_UNION);
+    insertTable(lookup_table, "endunion", TK_ENDUNION);
+    insertTable(lookup_table, "definetype", TK_DEFINETYPE);
+    insertTable(lookup_table, "as", TK_AS);
+    insertTable(lookup_table, "type", TK_TYPE);
+    insertTable(lookup_table, "_main", TK_MAIN);
+    insertTable(lookup_table, "global", TK_GLOBAL);
+    insertTable(lookup_table, "parameter", TK_PARAMETER);
+    insertTable(lookup_table, "list", TK_LIST);
+    insertTable(lookup_table, "input", TK_INPUT);
+    insertTable(lookup_table, "output", TK_OUTPUT);
+    insertTable(lookup_table, "int", TK_INT);
+    insertTable(lookup_table, "real", TK_REAL);
+    insertTable(lookup_table, "endwhile", TK_ENDWHILE);
+    insertTable(lookup_table, "if", TK_IF);
+    insertTable(lookup_table, "then", TK_THEN);
+    insertTable(lookup_table, "endif", TK_ENDIF);
+    insertTable(lookup_table, "read", TK_READ);
+    insertTable(lookup_table, "write", TK_WRITE);
+    insertTable(lookup_table, "return", TK_RETURN);
+    insertTable(lookup_table, "call", TK_CALL);
+    insertTable(lookup_table, "record", TK_RECORD);
+    insertTable(lookup_table, "endrecord", TK_ENDRECORD);
+    insertTable(lookup_table, "else", TK_ELSE);
 }
 
 void fillBuffer(FILE* fp) //this is the function which fills the buffer when needed

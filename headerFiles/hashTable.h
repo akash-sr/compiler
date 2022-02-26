@@ -7,7 +7,8 @@
 
 int calculateHash(char* str);
 void initTable(hash_entry* table);
-void insertTable(hash_entry* table, char* lexeme);
+void insertTable(hash_entry* table, char* lexeme, int value);
 bool searchTable(hash_entry* table, char* lexeme);
+int search_hash_table(hash_entry* table, char* lexeme);
 
 #endif

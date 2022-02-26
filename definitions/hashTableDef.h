@@ -10,6 +10,7 @@
 typedef struct{
     char lexeme[MAX_LEX_LEN+1];
     bool present;
+    void* value;
 } hash_entry;
 
 typedef hash_entry hash_table[HASHTABLE_SIZE];

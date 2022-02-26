@@ -67,16 +67,16 @@ int main(int argc, char* argv[]){
 		printf("\n");
 
 		switch(choice){
-			case 0:
+			case 0:;
 				exit(0);
-			case 1:
-				char cleanFile[] = "cleanFile.c";
+			case 1:;
+				char cleanFile[12] = "cleanFile.c";
 				removeComments(sourceFile, cleanFile);
 				break;
-			case 2:
+			case 2:;
 				FILE *fp = getStream(source);
 				break;
-			default:
+			default:;
 				printf("Lite\n");
 				break;
 		}

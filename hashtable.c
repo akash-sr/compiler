@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include<stdlib.h>
 #include "definitions/hashTableDef.h"
 
 int calculateHash(char* str){

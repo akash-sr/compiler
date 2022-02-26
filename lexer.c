@@ -1088,13 +1088,13 @@ FILE* getStream(FILE *source) {
               fprintf(fp,"%-20f  |  ", tkn.rnum);
               break;
             case TK_FIELDID:
-              fprintf(fp,"%-20f  |  ", tkn.id);
+              fprintf(fp,"%s  |  ", tkn.id);
               break;
             case TK_FUNID:
-              fprintf(fp,"%-20f  |  ", tkn.id);
+              fprintf(fp,"%s  |  ", tkn.id);
               break;
             case TK_RUID:
-              fprintf(fp,"%-20f  |  ", tkn.id);
+              fprintf(fp,"%s  |  ", tkn.id);
               break;
             default:
               fprintf(fp,"%-20s  |  ", tkn.id);

@@ -18,38 +18,55 @@ void printMenu(){
 
 void generateTokenMap() {
 
-	FILE *fp = fopen("tokens.txt", "r");
+	// printf("generatetokenmap ki first line\n");
+	FILE *fp = fopen("./tokens.txt", "r");
+	// printf("tokens.txt opened successfully\n");
+
 	fseek(fp, 0, SEEK_END);
+	// printf("seekend ho gaya\n");
 	int fileLength = ftell(fp);
+	// printf("ftell ho gaya\n");
 	fseek(fp, 0, SEEK_SET);
+	// printf("seekset ho gaya\n");
+
 
 	char *tokens = malloc(sizeof(char) * (fileLength + 1));
-  if (tokens == NULL) {
+	// printf("\n token malloc ho gaya\n");
+  	if (tokens == NULL) {
 		perror("terminal_string filling failed\n");
 		exit(1);
 	}
 
 	fread(tokens, sizeof(char), fileLength, fp);
 	tokens[fileLength] = '\0';
+	// printf("\n tokens ended succesfully \n");
 	fclose(fp);
 
 	char *tok = NULL;
 
-  int key = 0;
-	while((tok = strtok(NULL, ", \n"))!=NULL){
+  	int key = 0;
+	tok = strtok(tokens,", \n");
+	strncpy(keyToToken[key++], tok, MAX_SYMBOL_LENGTH);
+	while((tok = strtok(NULL, ", \n"))){
 		strncpy(keyToToken[key++], tok, MAX_SYMBOL_LENGTH);
 	}
+	printf("\n debug statement \n");
 
 	free(tokens);
 }
 
 int main(int argc, char* argv[]){
+	// printf("first line\n");
 	if(argc!=2){
 		perror("Invalid Input!!\n");
 		exit(1);
 	}
 
+	printf("generateTokenMap k just pehle\n");
+
 	generateTokenMap();
+	
+	printf("generateTokenMap sahi se ho gaya\n");
 
 	char sourceFile[10];
 	strncpy(sourceFile, argv[1], 10);

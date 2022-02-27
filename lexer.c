@@ -416,7 +416,9 @@ TOKEN getNextToken(FILE *fp)
             }
             else
             {
-                state = 6;
+                retract(1);
+                state = 65;
+                // state = 6;
             }
             break;
 
@@ -436,7 +438,9 @@ TOKEN getNextToken(FILE *fp)
             }
             else
             {
-                state = 8;
+                retract(1);
+                state = 65;
+                // state = 8;
             }
             break;
 
@@ -480,7 +484,9 @@ TOKEN getNextToken(FILE *fp)
             }
             else
             {
-                state = 12;
+                retract(1);
+                state = 65;
+                // state = 12;
             }
             break;
 
@@ -500,7 +506,9 @@ TOKEN getNextToken(FILE *fp)
             }
             else
             {
-                state = 14;
+                retract(1);
+                state = 65;
+                // state = 14;
             }
             break;
 
@@ -895,7 +903,9 @@ TOKEN getNextToken(FILE *fp)
             }
             else
             {
-                state = 51;
+                retract(1);
+                state = 65;
+                // state = 51;
             }
             break;
 
@@ -916,7 +926,9 @@ TOKEN getNextToken(FILE *fp)
             }
             else
             {
-                state = 53;
+                retract(1);
+                state = 65;
+                // state = 53;
             }
             break;
 

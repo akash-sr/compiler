@@ -1181,7 +1181,7 @@ char getNextChar(FILE* fp)
 void removeComments(char * sourceFile, char* cleanFile){
 
 
-    int fwdPtr=MAX_BUFFER_SIZE;
+    fwdPtr=MAX_BUFFER_SIZE;
     FILE * fptr=fopen(sourceFile,"r");
     FILE * cptr=fopen(cleanFile,"w");
 

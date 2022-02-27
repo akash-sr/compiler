@@ -731,9 +731,18 @@ TOKEN getNextToken(FILE *fp)
             return tkn;
             break;
 
-        case 35:
+        case 35:;
+            char d = getChar(fp);
+            while((d!='\n') && (d!=EOF)){
+                d = getChar(fp);
+            }
+            retract(1);
+            char ch = '%';
+            char str[2];
+            str[0] = ch;
+            str[1] = '\0';
             tkn.name = TK_COMMENT;
-            strncpy(tkn.id, "%%", MAX_LEX_LEN); // hiw to include % inside "" ?
+            strncpy(tkn.id, str, MAX_LEX_LEN);
             lexeme_begin = fwdPtr;
             state = 0;
             return tkn;
@@ -1020,6 +1029,7 @@ TOKEN getNextToken(FILE *fp)
 
         case 65:
             tkn.name = LEX_ERROR1;
+            strncpy(tkn.id, lexeme, MAX_LEX_LEN);
             int lex_size = fwdPtr - lexeme_begin;
             if (lex_size < 0)
             {
@@ -1039,6 +1049,7 @@ TOKEN getNextToken(FILE *fp)
             lexeme_begin = fwdPtr;
             state = 0;
             return tkn;
+            break;
 
         default:
             break;
@@ -1047,19 +1058,19 @@ TOKEN getNextToken(FILE *fp)
     return tkn;
 }
 
-FILE* getStream(FILE *source) {
+void getStream(FILE *source) {
   TOKEN tkn;
-  FILE * fp = fopen("output/lexer_output.txt", "w");
+  FILE * fp = fopen("output.txt", "w");
   if(fp==NULL){
     perror("fopen error !!");
-    return fp;
+    return;
   }
 
   // printf("LINE_NUMBER", "LEXEME", "tokenName");
 
   if (source == NULL) {
     perror("source null : print token stream\n");
-    return fp;
+    return;
   }
 
   while (true) {
@@ -1069,43 +1080,47 @@ FILE* getStream(FILE *source) {
     }
     else {
       if (tkn.name == LEX_ERROR1) {
-        printf("==========================================================\n");
-        printf("%-15d  |  %-20s  |  %-20s\n", tkn.line_no, tkn.id,"This is not the valid lexeme");
-        printf("==========================================================\n");
+        // printf("==========================================================\n");
+        // printf("%-15d  |  %-20s  |  %-20s\n", tkn.line_no, tkn.id,"This is not the valid lexeme");
+        // printf("==========================================================\n");
+        fprintf(fp, "Line no. %-15d Unknown pattern <%s> \n", tkn.line_no, lexeme);
       }
       else if(tkn.name == LEX_ERROR2){
-        printf("==========================================================\n");
-        printf("%-15d  |  %-20s  |  %-20s\n", tkn.line_no, tkn.id,"Length exceeded");
-        printf("==========================================================\n");
+        // printf("==========================================================\n");
+        // printf("%-15d  |  %-20s  |  %-20s\n", tkn.line_no, tkn.id,"Length exceeded");
+        // printf("==========================================================\n");
+        fprintf(fp, "Line no. %-15d Variable Identifier is longer than the prescribed length of 20 characters.\n", tkn.line_no);
       }
       else {
           // fprintf(fp,"%-15d  |  ", tkn.line_no);
           switch (tkn.name) {
-            case TK_NUM:
-              fprintf(fp,"%-20d  |  ", tkn.num);
+            case TK_NUM:;
+              // fprintf(fp,"%-20d  |  ", tkn.num);
+              fprintf(fp, "Line no. %-15d Lexeme %-20d TOKEN %-20s\n", tkn.line_no, tkn.num, keyToToken[tkn.name]);
               break;
-            case TK_RNUM:
-              fprintf(fp,"%-20f  |  ", tkn.rnum);
+            case TK_RNUM:;
+              // fprintf(fp,"%-20f  |  ", tkn.rnum);
+              fprintf(fp, "Line no. %-15d Lexeme %-20s TOKEN %-20s\n", tkn.line_no, lexeme, keyToToken[tkn.name]);
               break;
-            case TK_FIELDID:
-              fprintf(fp,"%s  |  ", tkn.id);
-              break;
-            case TK_FUNID:
-              fprintf(fp,"%s  |  ", tkn.id);
-              break;
-            case TK_RUID:
-              fprintf(fp,"%s  |  ", tkn.id);
-              break;
-            default:
-              fprintf(fp,"%-20s  |  ", tkn.id);
+            // case TK_FIELDID:
+            //   fprintf(fp,"%s  |  ", tkn.id);
+            //   break;
+            // case TK_FUNID:
+            //   fprintf(fp,"%s  |  ", tkn.id);
+            //   break;
+            // case TK_RUID:
+            //   fprintf(fp,"%s  |  ", tkn.id);
+            //   break;
+            default:;
+              fprintf(fp, "Line no. %-15d Lexeme %-20s TOKEN %-20s\n", tkn.line_no, tkn.id, keyToToken[tkn.name]);
               break;
           }
-          fprintf(fp,"%-20s\n", keyToToken[tkn.name]);
+          // fprintf(fp,"%-20s\n", keyToToken[tkn.name]);
           // fprintf(fp, "%s", );
       }
     }
   } // end of while
-  return fp;
+  fclose(fp);
 }
 // Hemant's code
 // int MAX_BUFFER_SIZE=50;
@@ -1178,7 +1193,7 @@ void removeComments(char * sourceFile, char* cleanFile){
     }
 
 
-    printf("%d\n",1);
+    //printf("%d\n",1);
 
     // char buff[255];
     char c= getNextChar(fptr);   //fgetc ke badle getChar daalna padega kyoki waha hum chahenge ki buffer me pehle read kar le phir hum kare
@@ -1190,11 +1205,16 @@ void removeComments(char * sourceFile, char* cleanFile){
             while((c!='\n') && (c != EOF)){
                 c=getNextChar(fptr);
             }
+            if(c == '\n'){
+                fputc(c, cptr);
+            }
+            else{
+                break;
+            }
 
         }else{
             fputc(c,cptr);
         }
-
         c=getNextChar(fptr);
 
     }

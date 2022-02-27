@@ -14,11 +14,12 @@ TOKEN getToken();
 char getChar(FILE *fp);
 
 void fillBuffer(FILE *fp);
+void fillCommentBuffer(FILE* fp);
 void retract(int numOfChars);
 
 tokenName searchKeyword(char *lexeme);
 
 void removeComments(char * sourceFile, char* cleanFile);
-FILE* getStream(FILE *source);
+void getStream(FILE *source);
 
 #endif

@@ -13,7 +13,7 @@ void printMenu(){
 	printf("3: Parse\n");
 	printf("4: Time taken\n");
 	printf("-------------------------------------\n");
-	printf("Enter you choice:");
+	printf("Enter your choice:");
 }
 
 void generateTokenMap() {
@@ -50,7 +50,7 @@ void generateTokenMap() {
 	while((tok = strtok(NULL, ", \n"))){
 		strncpy(keyToToken[key++], tok, MAX_SYMBOL_LENGTH);
 	}
-	printf("\n debug statement \n");
+	//printf("\n debug statement \n");
 
 	free(tokens);
 }
@@ -62,11 +62,11 @@ int main(int argc, char* argv[]){
 		exit(1);
 	}
 
-	printf("generateTokenMap k just pehle\n");
+	//printf("generateTokenMap k just pehle\n");
 
 	generateTokenMap();
 	
-	printf("generateTokenMap sahi se ho gaya\n");
+	//printf("generateTokenMap sahi se ho gaya\n");
 
 	char sourceFile[10];
 	strncpy(sourceFile, argv[1], 10);
@@ -87,11 +87,13 @@ int main(int argc, char* argv[]){
 			case 0:;
 				exit(0);
 			case 1:;
-				char cleanFile[12] = "cleanFile.c";
+				char cleanFile[20] = "cleanFile.txt";
+				initializeLexer(source);
 				removeComments(sourceFile, cleanFile);
 				break;
 			case 2:;
-				FILE *fp = getStream(source);
+			    initializeLexer(source);
+				getStream(source);
 				break;
 			default:;
 				printf("Lite\n");

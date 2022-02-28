@@ -12,6 +12,10 @@ typedef enum {
 #include "../tokens.txt"
 } tokenName;
 
+typedef enum{
+  #include "../nonTerminals.txt"
+} ntName;
+
 typedef struct token {
   tokenName name;
   union {
@@ -35,5 +39,6 @@ int rounds_completed;
 int line_no;
 
 extern char keyToToken[NUM_OF_TERMINALS][MAX_SYMBOL_LENGTH];
+extern char keyToNT[NUM_OF_NONTERMINALS][MAX_SYMBOL_LENGTH];
 
 #endif

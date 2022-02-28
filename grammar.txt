@@ -1,14 +1,14 @@
 program otherfunctions mainfunction
 mainfunction TK_MAIN stmts TK_END
 otherfunctions function otherfunctions
-otherufnctions EPSILON
+otherfunctions EPSILON
 function TK_FUNID input_par output_par TK_SEM stmts TK_END
 input_par TK_INPUT TK_PARAMETER TK_LIST TK_SQL parameter_list TK_SQR
 output_par TK_OUTPUT TK_PARAMETER TK_LIST TK_SQL parameter_list TK_SQR
 output_par EPSILON
 parameter_list datatype TK_ID remaining_list
 datatype primitivedatatype
-dataType constructedDatatype
+datatype constructedDatatype
 primitivedatatype TK_INT
 primitivedatatype TK_REAL
 constructeddatatype TK_RECORD TK_RUID
@@ -32,7 +32,7 @@ morefields EPSILON
 declarations declaration declarations
 declarations EPSILON
 declaration TK_TYPE datatype TK_COLON TK_ID global_or_not TK_SEM
-global_or_not TK_GLOBAL 
+global_or_not TK_GLOBAL
 global_or_not EPSILON
 otherstmts stmt otherstmts
 otherstmts EPSILON

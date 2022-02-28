@@ -55,6 +55,46 @@ void generateTokenMap() {
 	free(tokens);
 }
 
+void generateNTMap() {
+
+	// printf("generatetokenmap ki first line\n");
+	FILE *fp = fopen("./nonTerminals.txt", "r");
+	// printf("tokens.txt opened successfully\n");
+
+	fseek(fp, 0, SEEK_END);
+	// printf("seekend ho gaya\n");
+	int fileLength = ftell(fp);
+	// printf("ftell ho gaya\n");
+	fseek(fp, 0, SEEK_SET);
+	// printf("seekset ho gaya\n");
+
+
+	char *nonTerminals = malloc(sizeof(char) * (fileLength + 1));
+	// printf("\n token malloc ho gaya\n");
+  	if (nonTerminals == NULL) {
+		perror("terminal_string filling failed\n");
+		exit(1);
+	}
+
+	fread(nonTerminals, sizeof(char), fileLength, fp);
+	nonTerminals[fileLength] = '\0';
+	// printf("\n tokens ended succesfully \n");
+	fclose(fp);
+
+	char *nt = NULL;
+
+  int key = 0;
+	nt = strtok(nonTerminals,", \n");
+	strncpy(keyToNT[key++], nt, MAX_SYMBOL_LENGTH);
+	while((nt = strtok(NULL, ", \n"))){
+		strncpy(keyToNT[key++], nt, MAX_SYMBOL_LENGTH);
+	}
+	//printf("\n debug statement \n");
+
+	free(nonTerminals);
+}
+
+
 int main(int argc, char* argv[]){
 	// printf("first line\n");
 	if(argc!=2){
@@ -65,7 +105,7 @@ int main(int argc, char* argv[]){
 	//printf("generateTokenMap k just pehle\n");
 
 	generateTokenMap();
-	
+	generateNTMap();
 	//printf("generateTokenMap sahi se ho gaya\n");
 
 	char sourceFile[10];

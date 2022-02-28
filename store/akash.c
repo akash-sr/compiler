@@ -3,8 +3,106 @@
 parseInputSourceCode
 printParseTree
 */
+tree_node* parse_input_source_code(FILE* source){
+  stack* main_stack = stack_init();
+  stack* aux_stack = stack_init();
+  TOKEN tkn;
 
-//parserDef.h
+  tree_node* root = create_tree_node();
+  root->sym->t = TK_DOLLAR;
+  root->sym->is_terminal = true;
+
+  tree_node* start = create_tree_node();
+  start->sym->nt = program;
+  start->sym->is_terminal = false;
+  push(main_stack,start);
+
+  tkn = getNextToken(source);
+
+  while(main_stack->size>0){
+      tree_node* stTop = (tree_node*)pop(main_stack);
+      if(stTop->sym->is_terminal){
+        // if match
+        if(tkn.name == TK_DOLLAR){
+          if(stTop->sym->t == tkn.name){
+            //parsing complete
+            printf("Prasing Complete\n");
+            break;
+          }
+          else{
+            //Error
+            perror("Extra characters present in input\n");
+            break;
+          }
+        }
+        if(stTop->sym->t == tkn.name){
+          //increment input pointer
+          tkn = getNextToken(source);
+          continue;
+        }
+        else{
+          // error
+        }
+      }
+      else{
+        //expand using parse table
+        int ruleNo = parse_table[stTop->sym->nt][tkn.name];
+        if(ruleNo == NO_MATCHING_RULE){
+          //error
+        }
+        else if(ruleNo == SYN_RULE){
+          //error. Enter panic mode
+          while(tkn.name!=TK_DOLLAR){
+            tkn = getNextToken(source);
+            if(set_find_elem(follow_set[stTop->sym->nt], tkn.name))
+              break;
+          }
+          if(tkn.name == TK_DOLLAR){
+            printf("Prasing completed\n");
+            break;
+          }
+        }
+        else{
+          // get the rule
+          cell rule = grammar[ruleNo];
+          rhsnode* temp = rule.head;
+
+          // expand using that rule
+          while(temp!=NULL){
+            tree_node* node = create_tree_node();
+            node->sym->is_terminal = temp->sym->is_terminal;
+            if(node->sym->is_terminal)
+              node->sym->t = temp->sym->t;
+            else
+              node->sym->nt = temp->sym->nt;
+            // don't add epsilon to stack
+            if(node->sym->is_terminal==false || node->sym->t != EPSILON)
+              push(aux_stack, node);
+            add_child(stTop, node);
+            temp=temp->next;
+          }
+
+          // push contents of aux stack to main stack
+          /*
+          This is done to add the rule in order
+          */
+          while(aux_stack->size>0){
+            tree_node* cur = pop(aux_stack);
+            push(main_stack, cur);
+          }
+
+        }
+      }
+  }
+  return start;
+}
+
+
+//parser.h
+#ifndef PARSER_H
+#define PARSER_H
+
+#include "../headerFiles/treeADT.h"
 // parserDef.h
 
 #inndef PARSERDEF_H
@@ -18,6 +116,7 @@ printParseTree
 
 #define RHS_MAX_LENGTH 100
 #define NO_MATCHING_RULE -1
+#define SYN_RULE -2
 
 typedef enum{
   #include "../nonTerminals.txt"
@@ -48,6 +147,7 @@ typedef struct{
 ull first_set[NUM_OF_TERMINALS][SET_SIZE];
 ull follow_set[NUM_OF_TERMINALS][SET_SIZE];
 
+cell grammar[NUM_OF_RULES];
 #endif
 
 //treeADTDef.h
@@ -61,13 +161,13 @@ ull follow_set[NUM_OF_TERMINALS][SET_SIZE];
 extern char keyToNT[NUM_OF_NONTERMINALS][MAX_SYMBOL_LENGTH];
 extern char keyToToken[NUM_OF_TERMINALS][MAX_SYMBOL_LENGTH];
 
-tyepdef struct TREENODE{
+typedef struct TREENODE{
   struct TREENODE *parent;
   struct TREENODE *sibling
   struct TREENODE *leftmost_child;
   struct TREENODE *rightmost_child;
   symbol sym;
-  TOKEN token;
+  // TOKEN token;
   int num_child;
   bool visited;
   // struct {
@@ -105,9 +205,8 @@ tree_node* create_tree_node(){
   newNode->rightmost_child = NULL;
   newNode->num_child = 0;
   newNode->visted = false;
-  newNode->line_nums.start = 0;
-  newNode->line_nums.end = 0;
-
+  // newNode->line_nums.start = 0;
+  // newNode->line_nums.end = 0;
   return newNode;
 }
 

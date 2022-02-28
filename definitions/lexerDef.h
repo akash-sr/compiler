@@ -12,9 +12,10 @@ typedef enum {
 #include "../tokens.txt"
 } tokenName;
 
-typedef enum{
-  #include "../nonTerminals.txt"
-} ntName;
+// typedef enum{
+//   #include "../nonTerminals.txt"
+// } ntName;
+//yaha par commit kiya hai
 
 typedef struct token {
   tokenName name;

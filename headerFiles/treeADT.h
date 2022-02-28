@@ -1,4 +1,4 @@
-#infdef TREE_ADT_H
+#ifndef TREE_ADT_H
 #define TREE_ADT_H
 
 #include "../definitions/treeADTDef.h"

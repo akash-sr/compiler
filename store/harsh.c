@@ -2,7 +2,12 @@ int rightmost_set_bit(int* num){
     int temp1 = (*num & (*num -1)); // Unsets rightmost bit of *num
     int temp2 = temp1 ^ (*num); // temp2 contains only the rightmost set bit of *num
     *num = temp1;
-    int position = INT_NUM_BITS - 1 - log2(temp2);
+    int lg2 = 0;
+    while(temp2){
+      lg2++;
+      temp2>>=1;
+    }
+    int position = INT_NUM_BITS - lg2;
     return position;
 }
 
@@ -28,7 +33,10 @@ void parser_init(){
         set_init(first_set(i));
     }
     for(int i=0;i<NUM_OF_TERMINALS;i++){
-        initTable(terminal_table, terminal_string[i], i);
+        insertTable(terminal_table, keyToTokenMap[i], i);
+    }
+    for(int i=0;i<NUM_OF_NONTERMINALS;i++){
+      insertTable(non_terminal_table, keyToNTMap[i], i);
     }
     for(int i=0;i<NUM_OF_NONTERMINALS;i++){
         for(int j=0;j<NUM_OF_TERMINALS;j++){
@@ -51,4 +59,3 @@ void insert_at_end(rhsnode_ptr* ptr_tail, symbol sym){
     }
     *ptr_tail = node;
 }
-

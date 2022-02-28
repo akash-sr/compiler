@@ -2,7 +2,7 @@
 #ifndef HASHTABLEDEF_H
 #define HASHTABLEDEF_H
 
-#define HASHTABLE_SIZE 29
+#define HASHTABLE_SIZE 107
 #define MAX_LEX_LEN 100
 #define KEY_NOT_FOUND -1
 #include <stdbool.h>

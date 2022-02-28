@@ -26,8 +26,14 @@ void initTable(hash_entry* table){
 
 void insertTable(hash_entry* table, char* lexeme, int value){
     int hash_value = calculateHash(lexeme);
-    while(table[hash_value].present == true){
+    int probe_no = 0;
+    while(table[hash_value].present == true && probe_no < HASHTABLE_SIZE){
         hash_value = (hash_value + 1) % HASHTABLE_SIZE;
+        probe_no++;
+    }
+    if(table[hash_value].present == true){
+        printf("Hash Table full, cannot insert\n");
+        return;
     }
     table[hash_value].present = true;
     strncpy(table[hash_value].lexeme, lexeme, MAX_LEX_LEN);

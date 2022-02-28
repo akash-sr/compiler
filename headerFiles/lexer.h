@@ -7,17 +7,17 @@
 
 void initializeLexer(FILE *source);
 void generateLookupTable();
-void generateTokenMap();
+extern void generateTokenMap();
 
-TOKEN getNextToken(FILE *fp);
-TOKEN getToken();
+extern TOKEN getNextToken(FILE *fp);
+extern TOKEN getToken();
 char getChar(FILE *fp);
 
-void fillBuffer(FILE *fp);
+extern void fillBuffer(FILE *fp);
 void fillCommentBuffer(FILE* fp);
-void retract(int numOfChars);
+extern void retract(int numOfChars);
 
-tokenName searchKeyword(char *lexeme);
+extern tokenName searchKeyword(char *lexeme);
 
 void removeComments(char * sourceFile, char* cleanFile);
 void getStream(FILE *source);

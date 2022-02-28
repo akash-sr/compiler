@@ -1,15 +1,13 @@
 #include "headerFiles/parser.h"
 #include "headerFiles/hashTable.h"
-#include "headerFiles/lexer.h"
-#include "headerFiles/setADT.h"
 #include "headerFiles/stackADT.h"
-#include "headerFiles/treeADT.h"
+#include "headerFiles/setADT.h"
+#include "headerFiles/lexer.h"
+// #include "headerFiles/treeADT.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-
 
 void parser_init(){
     initTable(terminal_table);

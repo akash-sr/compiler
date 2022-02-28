@@ -2,8 +2,13 @@
 #define PARSERDEF_H
 
 #include "../headerFiles/driver.h"
-#include "lexerDef.h"
+// #include "lexerDef.h"
 #include "../headerFiles/setADT.h"
+// #include "../headerFiles/stackADT.h"
+// #include "../headerFiles/treeADT.h"
+// #include "../headerFiles/driver.h"
+#include "../definitions/lexerDef.h"
+#include "../definitions/hashTableDef.h"
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -17,7 +22,8 @@ typedef enum{
 }ntName;
 
 extern char keyToNT[NUM_OF_NONTERMINALS][MAX_SYMBOL_LENGTH];
-extern FILE* parse_tree_file_ptr;
+extern char keyToToken[NUM_OF_TERMINALS][MAX_SYMBOL_LENGTH];
+// extern FILE* parse_tree_file_ptr;
 
 typedef struct{
   union{

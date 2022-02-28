@@ -1,3 +1,5 @@
+#include "headerFiles/treeADT.h"
+#include <stdlib.h>
 tree_node* create_tree_node(){
   tree_node* newNode = (tree_node*)malloc(sizeof(tree_node));
   if(newNode == NULL){
@@ -9,7 +11,7 @@ tree_node* create_tree_node(){
   newNode->leftmost_child = NULL;
   newNode->rightmost_child = NULL;
   newNode->num_child = 0;
-  newNode->visted = false;
+  newNode->visited = false;
   // newNode->line_nums.start = 0;
   // newNode->line_nums.end = 0;
   return newNode;

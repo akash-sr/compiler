@@ -2,8 +2,8 @@
 #define PARSER_H
 
 #include "../definitions/parserDef.h"
-#include "treeADT.h"
-#include "setADT.h"
+// #include "lexer.h"
+#include "../headerFiles/treeADT.h"
 #include <stdio.h>
 
 void grammar_fill(FILE *fp);
@@ -49,6 +49,6 @@ int *get_rule_first_set(rhsnode*  node);
 void free_grammar();
 
 void print_symbol(symbol sym);
-// TOKEN getNextToken(FILE *fp);
+extern TOKEN getNextToken(FILE *fp);
 // void pretty_print(char *s);
 #endif

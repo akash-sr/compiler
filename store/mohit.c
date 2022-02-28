@@ -33,7 +33,7 @@ void grammar_fill(FILE *fp)
             symbol sym = get_symbol(sym_read);
             //symbol ko linked list ke end me insert karte jayege
             insert_at_end(&(grammar[rule_num].tail), sym);//rule_num naam ka variable yha kaam ayega grammar array ko index karne ke liye
-            if (grammar[rule_num].head == NULL)//hum head ko pehli baari me hi tail ke bara bar kar denge. pehli baari me tail bhi first symbol ko hi point karega. isliye yeh check lgaya he. baad wali iterations me head ko kuch nahi hoga. 
+            if (grammar[rule_num].head == NULL)//hum head ko pehli baari me hi tail ke bara bar kar denge. pehli baari me tail bhi first symbol ko hi point karega. isliye yeh check lgaya he. baad wali iterations me head ko kuch nahi hoga.
             {
                 grammar[rule_num].head = grammar[rule_num].tail;
             }
@@ -60,7 +60,7 @@ void grammar_fill(FILE *fp)
         //     sym_read = strtok(NULL, " \n");
         // }
 
-        rule_num++;//akhri kar humne ek rule padh hi liya pura, ab agli baar next rule padhenge. toh rule number badha diya 
+        rule_num++;//akhri kar humne ek rule padh hi liya pura, ab agli baar next rule padhenge. toh rule number badha diya
     }
 }
 
@@ -76,25 +76,35 @@ void print_symbol(symbol sym)
     }
 }
 
-void print_rule(int rule_no)
-{                                               // takes rule# as input parameter and print that grammar rule
-    int lhs = grammar[rule_no].lhs;             // grammer cell type ka he, cell.lhs ek nonterminal naam ka enum he. isliye lhs ek int type define kiya he idhar
-    rhsnode_ptr head = grammar[rule_no].head;   // grammar.head rhsnode_ptr type ka he. rhsnode_ptr me symbol type ki field he. toh head->symbol pass kar denge as a parementer to print_symbol
-    printf("%s -> ", non_terminal_string[lhs]); // grammar ka lhs print kar diya
-    while (head != NULL)                        // ab grammar ka rhs print karna chalu kiya he
-    {
-        print_symbol(head->sym); // head grammar ke rhs ki linked list ko point kar rha he. isko use karke uss rule ka rhs print kar sakte he
-        printf(" ");
-        head = head->next;
-    }
-    printf("\n");
-}
+// void print_rule(int rule_no)
+// {                                               // takes rule# as input parameter and print that grammar rule
+//     int lhs = grammar[rule_no].lhs;             // grammer cell type ka he, cell.lhs ek nonterminal naam ka enum he. isliye lhs ek int type define kiya he idhar
+//     rhsnode_ptr head = grammar[rule_no].head;   // grammar.head rhsnode_ptr type ka he. rhsnode_ptr me symbol type ki field he. toh head->symbol pass kar denge as a parementer to print_symbol
+//     printf("%s -> ", non_terminal_string[lhs]); // grammar ka lhs print kar diya
+//     while (head != NULL)                        // ab grammar ka rhs print karna chalu kiya he
+//     {
+//         print_symbol(head->sym); // head grammar ke rhs ki linked list ko point kar rha he. isko use karke uss rule ka rhs print kar sakte he
+//         printf(" ");
+//         head = head->next;
+//     }
+//     printf("\n");
+// }
 
 void print_grammar()
 {
     for (int i = 0; i < NUM_OF_RULES; i++)
     {
-        print_rule(i); // ek ek karke rule no ke hisab se rules print kar rahe he. print_rule int type ka parameter accept karta he. jo ki rule no he.
+        // print_rule(i); // ek ek karke rule no ke hisab se rules print kar rahe he. print_rule int type ka parameter accept karta he. jo ki rule no he.
+        int lhs = grammar[i].lhs;             // grammer cell type ka he, cell.lhs ek nonterminal naam ka enum he. isliye lhs ek int type define kiya he idhar
+        rhsnode_ptr head = grammar[i].head;   // grammar.head rhsnode_ptr type ka he. rhsnode_ptr me symbol type ki field he. toh head->symbol pass kar denge as a parementer to print_symbol
+        printf("%s -> ", non_terminal_string[lhs]); // grammar ka lhs print kar diya
+        while (head != NULL)                        // ab grammar ka rhs print karna chalu kiya he
+        {
+            print_symbol(head->sym); // head grammar ke rhs ki linked list ko point kar rha he. isko use karke uss rule ka rhs print kar sakte he
+            printf(" ");
+            head = head->next;
+        }
+        printf("\n");
     }
 }
 

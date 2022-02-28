@@ -1,7 +1,7 @@
 #ifndef SETADT_H
 #define SETADT_H
 
-#include "setADTDef.h"
+#include "../definitions/setADTDef.h"
 #include <stdbool.h>
 
 void set_init(set s);

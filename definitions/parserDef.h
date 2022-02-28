@@ -1,15 +1,16 @@
-#inndef PARSERDEF_H
+#ifndef PARSERDEF_H
 #define PARSERDEF_H
 
-#include "../headerFiles.h"
-#include "../definitions/lexerDef.h"
-#include <setADT.h>
-
+#include "../headerFiles/driver.h"
+#include "lexerDef.h"
+#include "../headerFiles/setADT.h"
+#include <stdio.h>
 #include <stdbool.h>
 
 #define RHS_MAX_LENGTH 100
 #define NO_MATCHING_RULE -1
 #define SYN_RULE -2
+#define NUM_OF_RULES 92
 
 typedef enum{
   #include "../nonTerminals.txt"
@@ -37,8 +38,13 @@ typedef struct{
   rhsnode* tail;
 }cell;
 
-ull first_set[NUM_OF_TERMINALS][SET_SIZE];
-ull follow_set[NUM_OF_TERMINALS][SET_SIZE];
+int first_set[NUM_OF_TERMINALS][SET_SIZE];
+int follow_set[NUM_OF_TERMINALS][SET_SIZE];
 
 cell grammar[NUM_OF_RULES];
+
+hash_table terminal_table;
+hash_table non_terminal_table;
+
+int parse_table[NUM_OF_NONTERMINALS][NUM_OF_TERMINALS];
 #endif

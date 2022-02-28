@@ -1,5 +1,6 @@
 #include "headerFiles/driver.h"
 #include "headerFiles/lexer.h"
+#include "headerFiles/parser.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -132,8 +133,35 @@ int main(int argc, char* argv[]){
 				removeComments(sourceFile, cleanFile);
 				break;
 			case 2:;
-			    initializeLexer(source);
+			  initializeLexer(source);
 				getStream(source);
+				break;
+			case 3:;
+				initializeLexer(source);
+				parser_init();
+
+				FILE* fp = fopen("grammar.txt", "r");
+				if(fp == NULL){
+					perror("fopen");
+				}
+
+				grammar_fill(fp);
+				populate_first_sets();
+				populate_follow_sets();
+
+				create_parse_table();
+				
+				tree_node* ast = parse_input_source_code(source);
+				if(ast==NULL){
+					printf("Empty parse tree\n");
+				}
+
+				char prefix[10000] = "";
+			  print_parse_tree(prefix, ast, false);
+
+				// print_parse_tree(ast);
+				free_grammar();
+				fclose(fp);
 				break;
 			default:;
 				printf("Lite\n");

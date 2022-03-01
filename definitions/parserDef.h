@@ -15,7 +15,7 @@
 #define RHS_MAX_LENGTH 100
 #define NO_MATCHING_RULE -1
 #define SYN_RULE -2
-#define NUM_OF_RULES 92
+#define NUM_OF_RULES 95
 
 typedef enum{
   #include "../nonTerminals.txt"

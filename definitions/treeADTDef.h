@@ -14,7 +14,7 @@ typedef struct TREENODE{
   struct TREENODE *leftmost_child;
   struct TREENODE *rightmost_child;
   symbol sym;
-  // TOKEN token;
+  TOKEN token;
   int num_child;
   bool visited;
   // struct {

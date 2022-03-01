@@ -147,22 +147,64 @@ int main(int argc, char* argv[]){
 
 				grammar_fill(fp);
 				populate_first_sets();
+				// printf("first set calculate\n");
+				// print_first_sets();
 				populate_follow_sets();
+				// print_follow_sets();
+
 
 				create_parse_table();
-				
+				// print_parse_table();
 				tree_node* ast = parse_input_source_code(source);
 				if(ast==NULL){
 					printf("Empty parse tree\n");
 				}
 
 				char prefix[10000] = "";
-			  print_parse_tree(prefix, ast, false);
+			  print_parse_tree(prefix, ast, true);
 
-				// print_parse_tree(ast);
+			// 	// print_parse_tree(ast);
 				free_grammar();
 				fclose(fp);
 				break;
+			case 4:;
+								clock_t start_time, end_time;
+                double total_CPU_time, total_CPU_time_in_seconds;
+                start_time = clock();
+								initializeLexer(source);
+								parser_init();
+
+								FILE* fp2 = fopen("grammar.txt", "r");
+								if(fp2 == NULL){
+									perror("fopen");
+								}
+
+								grammar_fill(fp2);
+								populate_first_sets();
+								// printf("first set calculate\n");
+								// print_first_sets();
+								populate_follow_sets();
+								// print_follow_sets();
+
+
+								create_parse_table();
+								// print_parse_table();
+								tree_node* ast2 = parse_input_source_code(source);
+								if(ast2==NULL){
+									printf("Empty parse tree\n");
+								}
+
+								// char pref[10000] = "";
+							  // print_parse_tree(pref, ast2, true);
+
+							// 	// print_parse_tree(ast);
+								free_grammar();
+								fclose(fp2);
+                end_time = clock();
+                total_CPU_time = (double) (end_time - start_time);
+                total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;
+                printf("total CPU time = %f \ntotal CPU time in seconds = %f\n",total_CPU_time,total_CPU_time_in_seconds);
+                break;
 			default:;
 				printf("Lite\n");
 				break;

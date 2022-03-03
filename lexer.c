@@ -1,6 +1,15 @@
-#include "headerFiles/driver.h"
-#include "headerFiles/hashTable.h"
-#include "headerFiles/lexer.h"
+/*
+Group 10
+Name: Hemant Singh Sisodiya ID: 2019A7PS0070P
+Name: Akash S Revankar      ID: 2019A7PS0294P
+Name: Harsh Butani          ID: 2019A7PS0022P
+Name: Siddharth Upadhyay    ID: 2019A7PS0033P
+Name: Mohit Sharma          ID: 2019A7PS0100P
+*/
+
+#include "driver.h"
+#include "hashtable.h"
+#include "lexer.h"
 
 #include <ctype.h>
 #include <errno.h>
@@ -10,7 +19,7 @@
 #include <string.h>
 
 tokenName searchKeyword(char *lexeme) {
-  int key = search_hash_table(lookup_table, lexeme);
+  int key = searchHashTable(lookup_table, lexeme);
   if (key == KEY_NOT_FOUND) {
     return TK_ID;
   }
@@ -28,14 +37,14 @@ TOKEN getToken() {
     tkn.line_no = line_no;
     int lex_size = fwdPtr - lexeme_begin;
     if (lex_size < 0) {
-    lex_size += rounds_completed * MAX_BUFFER_SIZE; //ROUNDS COMPLETED WILL BE 0 OR 1 ONLY BECUASE BUFFER IS TOO LARGE
+    lex_size += rounds_completed * MAX_BUFFER_SIZE;
     rounds_completed = 0;
     }
     int last_index = (lex_size >= MAX_LEX_LEN) ? MAX_LEX_LEN - 1:lex_size;
     lexeme[last_index] = '\0';
 
     if(state == 20){
-        if (lex_size > MAX_FUNID_LEN) // MAX_ID_LEN is a constant equal to maximum length of an identifier.
+        if (lex_size > MAX_FUNID_LEN)
         {
             tkn.name = LEX_ERROR2;
             strncpy(tkn.id, lexeme, MAX_LEX_LEN);
@@ -49,12 +58,6 @@ TOKEN getToken() {
         return tkn;
     }
     if(state == 23){
-        // if (lex_size > MAX_RUID_LEN) // MAX_ID_LEN is a constant equal to maximum length of an identifier.
-        // {
-        //     tkn.name = LEX_ERROR2;
-        //     strncpy(tkn.id, lexeme, MAX_LEX_LEN);
-        //     return tkn;
-        // }
         tokenName name = searchKeyword(lexeme);
         if(name==TK_ID)
             name = TK_RUID;
@@ -63,7 +66,7 @@ TOKEN getToken() {
         return tkn;
     }
     if(state == 27){
-        if (lex_size > MAX_TKID_LEN) // MAX_ID_LEN is a constant equal to maximum length of an identifier.
+        if (lex_size > MAX_TKID_LEN)
         {
             tkn.name = LEX_ERROR2;
             strncpy(tkn.id, lexeme, MAX_LEX_LEN);
@@ -75,12 +78,6 @@ TOKEN getToken() {
         return tkn;
     }
     if(state == 29){
-        // if (lex_size > MAX_FIELDID_LEN) // MAX_ID_LEN is a constant equal to maximum length of an identifier.
-        // {
-        //     tkn.name = LEX_ERROR2;
-        //     strncpy(tkn.id, lexeme, MAX_LEX_LEN);
-        //     return tkn;
-        // }
         tokenName name = searchKeyword(lexeme);
         if(name==TK_ID)
             name = TK_FIELDID;
@@ -88,32 +85,6 @@ TOKEN getToken() {
         strncpy(tkn.id, lexeme, MAX_LEX_LEN);
         return tkn;
     }
-//   if ( 29 == state || 20 == state || 23 ==state ||27==state) {
-//     if (lex_size > MAX_ID_LEN) // MAX_ID_LEN is a constant equal to maximum length of an identifier.
-//     {
-//       tkn.name = LEX_ERROR2;
-//       strncpy(tkn.id, lexeme, MAX_LEX_LEN);
-//       return tkn;
-//     }
-//     tokenName name = searchKeyword(lexeme);
-//     if(name==TK_ID)
-//     {
-//         if(state==20)
-//         {
-//             name = TK_FUNID;
-//         }
-//         if(state==23)
-//         {
-//             name = TK_RUID;
-//         }
-//         if(state==29)
-//         {
-//             name = TK_FIELDID;
-//         }
-//     }
-//      tkn.name = name;
-//      strncpy(tkn.id, lexeme, MAX_LEX_LEN);
-//      return tkn;
 
   if (4 == state || 6 == state || 8== state) {
     tkn.name = TK_NUM;
@@ -166,11 +137,10 @@ void generateLookupTable(){
     insertTable(lookup_table, "else", TK_ELSE);
 }
 
-void fillBuffer(FILE* fp) //this is the function which fills the buffer when needed
+void fillBuffer(FILE* fp)
 {
     int num;
-    // in case the forward pointer has reached buffer length or buffer length/2 because of retracting and not because the buffer needs to be filled again, then we should not populate the buffer again.
-    if (extraChars !=0)
+      if (extraChars !=0)
     {
         return;
     }
@@ -179,9 +149,7 @@ void fillBuffer(FILE* fp) //this is the function which fills the buffer when nee
         fwdPtr=0;
         rounds_completed++;
     }
-    // num stores the number of characters which are read.
-    // the characters which are read are stored in an array of characters named buffer.
-    // starting from index buffer/2 or from index 0
+
     num = fread(&twinBuffer[fwdPtr],sizeof(char),MAX_BUFFER_SIZE/2,fp);
     if(num == MAX_BUFFER_SIZE/2)
     {
@@ -205,7 +173,7 @@ void initializeLexer(FILE *source) {
   line_no = 1;
   rounds_completed = 0;
 
-  int num = fseek(source, 0, SEEK_SET); // go back to start of source code file
+  int num = fseek(source, 0, SEEK_SET);
   fillBuffer(source);
 }
 
@@ -227,11 +195,6 @@ char getChar(FILE* fp)
     return c;
 }
 
-// strncpy me \0 ke baare me check karna he
-// int lexeme_begin;
-// int fwdPtr;
-// int line_no;
-// int state;
 TOKEN getNextToken(FILE *fp)
 {
     char c;
@@ -245,7 +208,6 @@ TOKEN getNextToken(FILE *fp)
             c = getChar(fp);
             if (c == ' ' || c == '\n' || c == '\t')
             {
-                // tkn.num = c;
                 if ('\n' == c)
                 {
                     line_no++;
@@ -379,7 +341,6 @@ TOKEN getNextToken(FILE *fp)
 
         case 2:
             retract(1);
-            // tkn.name = TK_SPACE;
             lexeme_begin = fwdPtr;
             state = 0;
             break;
@@ -418,7 +379,7 @@ TOKEN getNextToken(FILE *fp)
             {
                 retract(1);
                 state = 65;
-                // state = 6;
+
             }
             break;
 
@@ -440,7 +401,7 @@ TOKEN getNextToken(FILE *fp)
             {
                 retract(1);
                 state = 65;
-                // state = 8;
+
             }
             break;
 
@@ -486,7 +447,7 @@ TOKEN getNextToken(FILE *fp)
             {
                 retract(1);
                 state = 65;
-                // state = 12;
+
             }
             break;
 
@@ -508,7 +469,7 @@ TOKEN getNextToken(FILE *fp)
             {
                 retract(1);
                 state = 65;
-                // state = 14;
+
             }
             break;
 
@@ -928,7 +889,7 @@ TOKEN getNextToken(FILE *fp)
             {
                 retract(1);
                 state = 65;
-                // state = 53;
+
             }
             break;
 
@@ -1045,13 +1006,13 @@ TOKEN getNextToken(FILE *fp)
             int lex_size = fwdPtr - lexeme_begin;
             if (lex_size < 0)
             {
-                lex_size += rounds_completed * MAX_BUFFER_SIZE; // yeh wali chij samjh nahi aayi ki sirf negative me hi kyu kar rha he
+                lex_size += rounds_completed * MAX_BUFFER_SIZE;
                 rounds_completed = 0;
             }
             int last_index = (lex_size < MAX_LEX_LEN) ? lex_size : -1;
             if (last_index == -1)
             {
-                tkn.name = LEX_ERROR2; // error reporting length exceeded
+                tkn.name = LEX_ERROR2;
             }
             else
             {
@@ -1072,13 +1033,6 @@ TOKEN getNextToken(FILE *fp)
 
 void getStream(FILE *source) {
   TOKEN tkn;
-  FILE * fp = fopen("output.txt", "w");
-  if(fp==NULL){
-    perror("fopen error !!");
-    return;
-  }
-
-  // printf("LINE_NUMBER", "LEXEME", "tokenName");
 
   if (source == NULL) {
     perror("source null : print token stream\n");
@@ -1092,64 +1046,29 @@ void getStream(FILE *source) {
     }
     else {
       if (tkn.name == LEX_ERROR1) {
-        // printf("==========================================================\n");
-        // printf("%-15d  |  %-20s  |  %-20s\n", tkn.line_no, tkn.id,"This is not the valid lexeme");
-        // printf("==========================================================\n");
-        fprintf(fp, "Line no. %-15d Unknown pattern <%s> \n", tkn.line_no, lexeme);
+        printf("Line no. %-15d Unknown pattern <%s> \n", tkn.line_no, lexeme);
       }
       else if(tkn.name == LEX_ERROR2){
-        // printf("==========================================================\n");
-        // printf("%-15d  |  %-20s  |  %-20s\n", tkn.line_no, tkn.id,"Length exceeded");
-        // printf("==========================================================\n");
-        fprintf(fp, "Line no. %-15d Variable Identifier is longer than the prescribed length of 20 characters.\n", tkn.line_no);
+        printf("Line no. %-15d Variable Identifier is longer than the prescribed length of 20 characters.\n", tkn.line_no);
       }
       else {
-          // fprintf(fp,"%-15d  |  ", tkn.line_no);
           switch (tkn.name) {
             case TK_NUM:;
-              // fprintf(fp,"%-20d  |  ", tkn.num);
-              fprintf(fp, "Line no. %-15d Lexeme %-20d TOKEN %-20s\n", tkn.line_no, tkn.num, keyToToken[tkn.name]);
+              printf("Line no. %-15d Lexeme %-20d TOKEN %-20s\n", tkn.line_no, tkn.num, keyToToken[tkn.name]);
               break;
             case TK_RNUM:;
-              // fprintf(fp,"%-20f  |  ", tkn.rnum);
-              fprintf(fp, "Line no. %-15d Lexeme %-20s TOKEN %-20s\n", tkn.line_no, lexeme, keyToToken[tkn.name]);
+              printf("Line no. %-15d Lexeme %-20s TOKEN %-20s\n", tkn.line_no, lexeme, keyToToken[tkn.name]);
               break;
-            // case TK_FIELDID:
-            //   fprintf(fp,"%s  |  ", tkn.id);
-            //   break;
-            // case TK_FUNID:
-            //   fprintf(fp,"%s  |  ", tkn.id);
-            //   break;
-            // case TK_RUID:
-            //   fprintf(fp,"%s  |  ", tkn.id);
-            //   break;
             default:;
-              fprintf(fp, "Line no. %-15d Lexeme %-20s TOKEN %-20s\n", tkn.line_no, tkn.id, keyToToken[tkn.name]);
+              printf("Line no. %-15d Lexeme %-20s TOKEN %-20s\n", tkn.line_no, tkn.id, keyToToken[tkn.name]);
               break;
           }
-          // fprintf(fp,"%-20s\n", keyToToken[tkn.name]);
-          // fprintf(fp, "%s", );
       }
     }
-  } // end of while
-  fclose(fp);
+  }
 }
-// Hemant's code
-// int MAX_BUFFER_SIZE=50;
-// int fwdPtr=50;
-// int extraChars=0;
-// char twinBuffer[50];
 
-
-// void retract(int numOfChars) {
-//   fwdPtr -= numOfChars;
-//   if (fwdPtr < 0) {
-//     fwdPtr += MAX_BUFFER_SIZE;
-//   }
-//   extraChars += numOfChars;
-// }
-
-void fillCommentBuffer(FILE* fp) //this is the function which fills the buffer when needed
+void fillCommentBuffer(FILE* fp)
 {
     int num;
     if (extraChars !=0){
@@ -1158,10 +1077,8 @@ void fillCommentBuffer(FILE* fp) //this is the function which fills the buffer w
     if (fwdPtr == MAX_BUFFER_SIZE)
     {
         fwdPtr=0;
-        // rounds_completed++;
+
     }
-    // num stores the numbmer of characters which are read.
-    // the characters which are read are stored in an array of characters named buffer. starting from index buffer/2 or from index 0
     num = fread(&twinBuffer[fwdPtr],1,MAX_BUFFER_SIZE/2,fp);
     if(num == MAX_BUFFER_SIZE/2)
     {
@@ -1178,11 +1095,6 @@ char getNextChar(FILE* fp)
         fillCommentBuffer(fp);
     }
     char c = twinBuffer[fwdPtr];
-    // int lex_index = (fwdPtr -lexeme_begin >= 0)?(fwdPtr-lexeme_begin):(fwdPtr-lexeme_begin+MAX_BUFFER_SIZE);
-    // if (lex_index<MAX_LEX_LEN)
-    // {
-    //     lexeme[lex_index] =c;
-    // }
     fwdPtr+=1;
     if (extraChars > 0)
         extraChars--;
@@ -1190,25 +1102,21 @@ char getNextChar(FILE* fp)
 }
 
 
-void removeComments(char * sourceFile, char* cleanFile){
+void removeComments(char * sourceFile){
 
 
     fwdPtr=MAX_BUFFER_SIZE;
     FILE * fptr=fopen(sourceFile,"r");
-    FILE * cptr=fopen(cleanFile,"w");
 
-    if(fptr==NULL || cptr==NULL){
-        printf("Files can't be opened try again");
+    if(fptr==NULL){
+        printf("File can't be opened try again");
         exit(1);
     }else{
-        printf("Files Opened\n");
+        printf("File Opened\n");
     }
 
 
-    //printf("%d\n",1);
-
-    // char buff[255];
-    char c= getNextChar(fptr);   //fgetc ke badle getChar daalna padega kyoki waha hum chahenge ki buffer me pehle read kar le phir hum kare
+    char c= getNextChar(fptr);
     while (c!= EOF)
     {
 
@@ -1218,65 +1126,20 @@ void removeComments(char * sourceFile, char* cleanFile){
                 c=getNextChar(fptr);
             }
             if(c == '\n'){
-                fputc(c, cptr);
+                putc(c,stdout);
             }
             else{
                 break;
             }
 
         }else{
-            fputc(c,cptr);
+            putc(c,stdout);
         }
         c=getNextChar(fptr);
 
     }
 
     fclose(fptr);
-    fclose(cptr);
+
 
 }
-
-
-// int main(){
-//
-//
-//     char sourceFile[20];
-//
-//     scanf("%s",sourceFile);
-//
-//     // printf("%s\n",sourceFile);
-//
-//     remove_comments(sourceFile);
-//
-//     printf("%s\n",sourceFile);
-//
-//     return 0;
-// }
-
-// void fillBuffer(FILE* fp) //this is the function which fills the buffer when needed
-// {
-//     int num;
-//     // in case the forward pointer has reached buffer length or buffer length/2 because of retracting and not because the buffer needs to be filled again, then we should not populate the buffer again.
-//     if (extraChars !=0)
-//     {
-//         return;
-//     }
-//     if (fwdPtr == MAX_BUFFER_SIZE)
-//     {
-//         fwdPtr=0;
-//         rounds_completed++;
-//     }
-//     // num stores the number of characters which are read.
-//     // the characters which are read are stored in an array of characters named buffer.
-//     // starting from index buffer/2 or from index 0
-//     num = fread(&twinBuffer[fwdPtr],sizeof(char),MAX_BUFFER_SIZE/2,fp);
-//     if(num == MAX_BUFFER_SIZE/2)
-//     {
-//         return;
-//     }
-//     else
-//     {
-//         twinBuffer[num + fwdPtr] = EOF;
-//         return;
-//     }
-// }

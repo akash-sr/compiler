@@ -1,8 +1,17 @@
+/*
+Group 10
+Name: Hemant Singh Sisodiya ID: 2019A7PS0070P
+Name: Akash S Revankar      ID: 2019A7PS0294P
+Name: Harsh Butani          ID: 2019A7PS0022P
+Name: Siddharth Upadhyay    ID: 2019A7PS0033P
+Name: Mohit Sharma          ID: 2019A7PS0100P
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
 #include<stdlib.h>
-#include "definitions/hashTableDef.h"
+#include "hashtable.h"
 
 int calculateHash(char* str){
     long long hash_value = 0;
@@ -54,7 +63,7 @@ bool searchTable(hash_entry* table, char* lexeme){
     return false;
 }
 
-int search_hash_table(hash_entry* table, char* lexeme){
+int searchHashTable(hash_entry* table, char* lexeme){
     int hash_value = calculateHash(lexeme);
     int probe_no = 0;
     while(table[hash_value].present == true && probe_no < HASHTABLE_SIZE){

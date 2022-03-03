@@ -1,113 +1,88 @@
-#include "headerFiles/parser.h"
-#include "headerFiles/hashTable.h"
-#include "headerFiles/stackADT.h"
-#include "headerFiles/setADT.h"
-#include "headerFiles/lexer.h"
-// #include "headerFiles/treeADT.h"
+/*
+Group 10
+Name: Hemant Singh Sisodiya ID: 2019A7PS0070P
+Name: Akash S Revankar      ID: 2019A7PS0294P
+Name: Harsh Butani          ID: 2019A7PS0022P
+Name: Siddharth Upadhyay    ID: 2019A7PS0033P
+Name: Mohit Sharma          ID: 2019A7PS0100P
+*/
+
+#include "parser.h"
+#include "hashtable.h"
+#include "stack.h"
+#include "set.h"
+#include "lexer.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
-void parser_init(){
-    initTable(terminal_table);
-    initTable(non_terminal_table);
+void initializeParser(){
+    initTable(terminalTable);
+    initTable(nonTerminalTable);
     for(int i=0;i<NUM_OF_NONTERMINALS;i++){
-        set_init(first_set[i]);
+        initializeSet(firstSet[i]);
     }
     for(int i=0;i<NUM_OF_TERMINALS;i++){
-        insertTable(terminal_table, keyToToken[i], i);
+        insertTable(terminalTable, keyToToken[i], i);
     }
     for(int i=0;i<NUM_OF_NONTERMINALS;i++){
-      insertTable(non_terminal_table, keyToNT[i], i);
+      insertTable(nonTerminalTable, keyToNT[i], i);
     }
     for(int i=0;i<NUM_OF_NONTERMINALS;i++){
         for(int j=0;j<NUM_OF_TERMINALS;j++){
             parse_table[i][j] = NO_MATCHING_RULE;
         }
     }
-    // num_tree_nodes = 0;
+
 }
 
-void grammar_fill(FILE *fp)
+void populateGrammar(FILE *fp)
 {
-    // grammar ek array he (cell type ka).
-    // har index par ek grammar rule ki information store he.
-    // 1. lhs of grmmar,
-    // 2. first symbol on rhs
-    // 3. rlast symbol on rhs
-    int rule_num = 0;//jab bhi koi file aayegi grammar ki toh uske saare grammars aayege. toh rule_num globally define karne ki jarurat nahi he. isi function me local variable bnakar grammar array ko index kar lege
-    char buffer[RHS_MAX_LENGTH];//hum ek iteration me ek hi rule read karege. toh buffer ki size define bhi utni hi ki
-
-    while (fgets(buffer, sizeof(buffer), fp) != NULL) // fgets keeps on reading until new line is encountered or maximum limit of character array. toh ek baar me hum ek hi rule read karege grammar.txt se
+    int rule_num = 0;
+    char buffer[RHS_MAX_LENGTH];
+    while (fgets(buffer, sizeof(buffer), fp) != NULL)
     {
-        char *sym_read; //yeh strtok dwara tokenize kiye hue symbol ko point karega
-
-        //????strtok ek baar me ek hi token deta he ???????
-        sym_read = strtok(buffer, " \n");//pehla symbol tokenize kar diya
-
-        //humne ek hi rule read kiya he, toh iss while loop ke ek iteration me sabse pehla wala symbol lhs ho hoga. baad me koi bhi lhs nahi aayega
-        // sabse pehla token toh lhs hoga, jo ki ntName he
-        // toh usko assign kar dete he idhar
-        //get_symbol symbol return karega. and grammar.lhs bhi "symbol" type ka he
-        grammar[rule_num].lhs = get_symbol(sym_read).nt; // symbol me union ke andar 2 field he -> nt/t. since, lhs nt hi hota he, toh symbol.nt kar diya idhar
+        char *sym_read;
+        sym_read = strtok(buffer, " \n");
+        grammar[rule_num].lhs = getSymbol(sym_read).nt;
         grammar[rule_num].head = NULL;
         grammar[rule_num].tail = NULL;
-        sym_read = strtok(NULL, " \n");//ab aage wale tokens(symbols) dekhte he
+        sym_read = strtok(NULL, " \n");
 
         while (sym_read != NULL)
         {
-            symbol sym = get_symbol(sym_read);
-            //symbol ko linked list ke end me insert karte jayege
-            insert_at_end(&(grammar[rule_num].tail), sym);//rule_num naam ka variable yha kaam ayega grammar array ko index karne ke liye
-            if (grammar[rule_num].head == NULL)//hum head ko pehli baari me hi tail ke bara bar kar denge. pehli baari me tail bhi first symbol ko hi point karega. isliye yeh check lgaya he. baad wali iterations me head ko kuch nahi hoga.
+            symbol sym = getSymbol(sym_read);
+            insertSymbol(&(grammar[rule_num].tail), sym);
+            if (grammar[rule_num].head == NULL)
             {
                 grammar[rule_num].head = grammar[rule_num].tail;
             }
             sym_read = strtok(NULL, " \n");
         }
 
-        // for (int i = 0; sym_read != NULL; i++)
-        // {
-        //     if (i == 0) // LHS of a production
-        //     {
-        //          grammar[rule_num].lhs = get_symbol(sym_read).nt;//symbol me union ke andar 2 field he - nt/t. since, lhs nt hi hota he, toh symbol.nt kar diya idhar
-        //          grammar[rule_num].head = NULL;
-        //          grammar[rule_num].tail = NULL;
-        //     }
-        //     else
-        //     {
-        //         symbol sym = get_symbol(sym_read);
-        //         insert_at_end(&(grammar[rule_num].tail), sym);
-        //         if (grammar[rule_num].head == NULL)
-        //         {
-        //             grammar[rule_num].head = grammar[rule_num].tail;
-        //         }
-        //     }
-        //     sym_read = strtok(NULL, " \n");
-        // }
 
-        rule_num++;//akhri kar humne ek rule padh hi liya pura, ab agli baar next rule padhenge. toh rule number badha diya
-    }
+        rule_num++;
+      }
 }
 
-symbol get_symbol(char* str){
+symbol getSymbol(char* str){
     symbol sym;
     char lexeme[strlen(str)];
     strcpy(lexeme, str);
     if(str[0] >= 'A' && str[0] <= 'Z'){
-        sym.is_terminal = true;
-        sym.t = search_hash_table(terminal_table, lexeme);
+        sym.isTerminal = true;
+        sym.t = searchHashTable(terminalTable, lexeme);
     }
     else{
-        sym.is_terminal = false;
-        sym.nt = search_hash_table(non_terminal_table, lexeme);
+        sym.isTerminal = false;
+        sym.nt = searchHashTable(nonTerminalTable, lexeme);
     }
     return sym;
 }
 
-void insert_at_end(rhsnode** ptr_tail, symbol sym){
+void insertSymbol(rhsnode** ptr_tail, symbol sym){
     rhsnode* node = (rhsnode*) malloc(sizeof(rhsnode));
     if(node == NULL){
         perror("insertion at end failed\n");
@@ -122,91 +97,10 @@ void insert_at_end(rhsnode** ptr_tail, symbol sym){
 }
 
 
-set get_rule_first_set(rhsnode* node) {
 
-  set fset = (set)malloc(sizeof(int) * SET_SIZE);
 
-  if (fset == NULL) {
-	perror("get rule first set failed\n");
-	exit(1);
-  }
 
-  set_init(fset);
-  rhsnode* temp = node;
-  int sym;
-
-  while (temp != NULL) {
-	if ((temp->sym).is_terminal == true) {
-	  sym = (temp->sym).t;
-	  set_add_elem(fset, sym);
-	  return fset;
-	}
-
-	else {
-	  sym = (temp->sym).nt;
-	  set_union(fset, fset, first_set[sym]);
-
-	  if (set_find_elem(first_set[sym], EPSILON) == false) // eps not in the nt
-	  {
-		return fset;
-	  } else {
-		if (temp->next != NULL) {
-		  set_remove_elem(fset, EPSILON);
-		}
-	  } // end of else - eps present in fset
-	}   // end of else - is nt
-
-	temp = temp->next;
-  } // end of while - ll traversal
-  return fset;
-}
-
-// set get_rule_first_set(rhsnode* head){
-//
-//     //make the set and do the following things
-//     rhsnode* temp=head;
-//
-//     set curr_follow_set=(set)malloc(sizeof(int)*SET_SIZE);
-//
-//     if(curr_follow_set==NULL){
-//         perror("The new set can't be formed in first_set_of_remaining!!");
-//         exit(1);
-//     }
-//
-//     set_init(curr_follow_set);
-//
-//     while(temp!=NULL){
-//
-//         if((temp->sym).is_terminal==true){
-//             set_add_elem(curr_follow_set,(temp->sym).t);
-//             return curr_follow_set;
-//         }else{
-//             //agar non terminal hai phir
-//             //what else to do with this
-//
-//             set_union(curr_follow_set,curr_follow_set,first_set[(temp->sym).nt]);
-//
-//             // if(temp->next==NULL){
-//             //     return curr_follow_set;
-//             // }else
-//             if(temp->next==NULL){
-//                 return curr_follow_set;
-//             }
-//             else if(set_find_elem(curr_follow_set,EPSILON)==false){
-//                 return curr_follow_set;
-//             }else{
-//                 set_remove_elem(curr_follow_set,EPSILON);
-//                 temp=temp->next;
-//             }
-//
-//         }
-//
-//     }
-//
-//     return curr_follow_set;
-// }
-
-void populate_first_sets(){
+void computeFirstSets(){
 
 
     for(int i=NUM_OF_RULES-1;i>=0;i--){
@@ -215,38 +109,30 @@ void populate_first_sets(){
         rhsnode* head=grammar[i].head;
         rhsnode* temp=head;
 
-        // printf("%s=>{\n",keyToNT[curr_non_terminal]);
 
         while(temp!=NULL){
 
-            if((temp->sym).is_terminal==true){
-                set_add_elem(first_set[curr_non_terminal],(temp->sym).t);
-                // printf("%s,",keyToToken[(temp->sym).t]);
+            if((temp->sym).isTerminal==true){
+                addElement(firstSet[curr_non_terminal],(temp->sym).t);
                 break;
             }else{
-                //non terminal hai
-                ///agar non terminal hai toh aage jaao
-
-                //now what to do
-                set copy_first_set=(set)malloc(sizeof(int)*SET_SIZE);
+                set copyFirstSet=(set)malloc(sizeof(int)*SET_SIZE);
 
                 for(int j=0;j<SET_SIZE;j++){
-                    copy_first_set[j]=first_set[(temp->sym).nt][j];
+                    copyFirstSet[j]=firstSet[(temp->sym).nt][j];
                 }
 
-                if(set_find_elem(copy_first_set,EPSILON)==true){
+                if(findElement(copyFirstSet,EPSILON)==true){
 
                     if(temp->next!=NULL){
-                        set_remove_elem(copy_first_set,EPSILON);
-                        //set_remove_elem(first_set[curr_non_terminal],EPSILON);
-                        //epsilon hata ke phir union karo
+                        removeElement(copyFirstSet,EPSILON);
                     }
 
-                    set_union(first_set[curr_non_terminal],first_set[curr_non_terminal],copy_first_set);
+                    takeUnion(firstSet[curr_non_terminal],firstSet[curr_non_terminal],copyFirstSet);
 
                     temp=temp->next;
                 }else{
-                  set_union(first_set[curr_non_terminal],first_set[curr_non_terminal],first_set[(temp->sym).nt]);
+                  takeUnion(firstSet[curr_non_terminal],firstSet[curr_non_terminal],firstSet[(temp->sym).nt]);
                   break;
                 }
 
@@ -257,17 +143,14 @@ void populate_first_sets(){
 
         }
 
-        // printf("}\n");
 
     }
 
 }
 
-void populate_follow_sets(){
-
-
+void computeFollowSets(){
     bool has_change=true;
-    set_add_elem(follow_set[program],TK_DOLLAR);
+    addElement(followSet[program],TK_DOLLAR);
     while(has_change==true){
 
         has_change=false;
@@ -279,13 +162,43 @@ void populate_follow_sets(){
 
             while(temp!=NULL){
 
-                if((temp->sym).is_terminal==true){
+                if((temp->sym).isTerminal==true){
                     temp=temp->next;
                 }else{
-                    //agar koi non terminal hai toh phir uska follow_set calculate kar do
 
                     set old_follow_set=(set)malloc(sizeof(int)*SET_SIZE);
-                    set curr_follow_set=get_rule_first_set(temp->next);
+                    set curr_follow_set=(set)malloc(sizeof(int)*SET_SIZE);
+
+                    rhsnode* temp1=temp->next;
+
+                    if(curr_follow_set==NULL){
+                        perror("The new set can't be formed in first_set_of_remaining!!");
+                        exit(1);
+                    }
+
+                    initializeSet(curr_follow_set);
+
+                    while(temp1!=NULL){
+
+                        if((temp1->sym).isTerminal==true){
+                            addElement(curr_follow_set,(temp1->sym).t);
+                            break;
+                        }else{
+
+                            takeUnion(curr_follow_set,curr_follow_set,firstSet[(temp1->sym).nt]);
+                            if(temp1->next==NULL){
+                                break;
+                            }
+                            else if(findElement(curr_follow_set,EPSILON)==false){
+                                break;
+                            }else{
+                                removeElement(curr_follow_set,EPSILON);
+                                temp1=temp1->next;
+                            }
+
+                        }
+
+                    }
 
                     if(old_follow_set==NULL){
                         perror("old follow set is not formed!!");
@@ -293,29 +206,26 @@ void populate_follow_sets(){
                     }
 
                     for(int j=0;j<SET_SIZE;j++){
-                        old_follow_set[j]=follow_set[(temp->sym).nt][j];
+                        old_follow_set[j]=followSet[(temp->sym).nt][j];
                     }
 
-                    if(set_find_elem(curr_follow_set,EPSILON)==true){
-                        set_remove_elem(curr_follow_set,EPSILON);
-                        set_union(curr_follow_set,curr_follow_set,follow_set[lhs]);
+                    if(findElement(curr_follow_set,EPSILON)==true){
+                        removeElement(curr_follow_set,EPSILON);
+                        takeUnion(curr_follow_set,curr_follow_set,followSet[lhs]);
                     }
 
                     if(temp->next==NULL){
-                        set_union(curr_follow_set,curr_follow_set,follow_set[lhs]);
+                        takeUnion(curr_follow_set,curr_follow_set,followSet[lhs]);
                     }
 
-                    // for(int j=0;j<SET_SIZE;j++){
-                    //     old_follow_set[j]=follow_set[(temp->sym).nt][j];
-                    // }
-// hemant ne glti ki
-                    set_union(follow_set[(temp->sym).nt],follow_set[(temp->sym).nt],curr_follow_set);
+                    takeUnion(followSet[(temp->sym).nt],followSet[(temp->sym).nt],curr_follow_set);
 
                     for(int j=0;j<SET_SIZE;j++){
-                        if(old_follow_set[j]!=follow_set[(temp->sym).nt][j]){
+                        if(old_follow_set[j]!=followSet[(temp->sym).nt][j]){
                             has_change=true;
                         }
                     }
+
 
                     free(old_follow_set);
                     temp=temp->next;
@@ -329,130 +239,136 @@ void populate_follow_sets(){
 
 }
 
-void create_parse_table() {
+void generateParseTable() {
   for (int i = 0; i < NUM_OF_RULES; i++) {
 	ntName nt = grammar[i].lhs;
-	set first_set_rhs = get_rule_first_set(grammar[i].head);
-  // set first_set_rhs = first_set[nt];
-  // printf("%d\n", i);
-	for (int j = 0; j < SET_SIZE; j++) {
-	  int x = first_set_rhs[j]; // first set
-	  while (x>0) {
-		int pos = rightmost_set_bit(&x); // position of terminal in first set
-		pos += (INT_NUM_BITS * j);
-    // if(i==24)
-    // printf("%s\n", keyToToken[pos]);
-		if (EPSILON == pos) {
-		  for (int j = 0; j < SET_SIZE; j++) {
-			int x = follow_set[nt][j]; // if epsilon is there in the first set, add follow
-			while (x>0) {
-			  int pos = rightmost_set_bit(&x);
-			  pos += (INT_NUM_BITS * j);
-			  if (EPSILON != pos) {
-				parse_table[nt][pos] = i;
-			  }
-			}
-		  }
-		}
-		else {
-		  parse_table[nt][pos] = i; // don't consider epsilon as terminal
-		}
 
-	  }
+	    rhsnode* temp=grammar[i].head;
 
-	}
+    set curr_follow_set=(set)malloc(sizeof(int)*SET_SIZE);
+
+    if(curr_follow_set==NULL){
+        perror("The new set can't be formed in first_set_of_remaining!!");
+        exit(1);
+    }
+
+    initializeSet(curr_follow_set);
+
+    while(temp!=NULL){
+
+        if((temp->sym).isTerminal==true){
+            addElement(curr_follow_set,(temp->sym).t);
+            break;
+        }else{
+
+            takeUnion(curr_follow_set,curr_follow_set,firstSet[(temp->sym).nt]);
+            if(temp->next==NULL){
+                break;
+            }
+            else if(findElement(curr_follow_set,EPSILON)==false){
+                break;
+            }else{
+                removeElement(curr_follow_set,EPSILON);
+                temp=temp->next;
+            }
+
+        }
+
+    }
+
+  for(int j=0;j<NUM_OF_TERMINALS;j++){
+    if(findElement(curr_follow_set, j)==false)
+      continue;
+      parse_table[nt][j] = i;
+  }
   }
 }
 
-// int rightmost_set_bit(set num) {
-//   int temp = (*num & (*num - 1));
-//   int pos = INT_NUM_BITS - 1 - log2(temp ^ *num);
-//   *num = temp;
-//   return pos;
-// }
-
-// void create_parse_table() {
-//   for (int i = 0; i < NUM_OF_RULES; i++) {
-// 	// printf("Filling r")
-// 	ntName nt = grammar[i].lhs;
-// 	set rhs_first_set = get_rule_first_set(grammar[i].head);
-//
-// 	for (int j = 0; j < SET_SIZE; j++) {
-// 	  int num = rhs_first_set[j]; // first of lhs
-//
-// 	  while (num) {
-// 		int pos = rightmost_set_bit(&num); // position of terminal in first set
-// 		pos += (INT_NUM_BITS * j);
-// 		if (EPSILON == pos) {
-// 		  for (int j = 0; j < SET_SIZE; j++) {
-// 			int num =
-// 				follow_set[nt][j]; // if epsilon in first set, add follow also
-// 			while (num) {
-// 			  int pos = rightmost_set_bit(&num);
-// 			  pos += (INT_NUM_BITS * j);
-// 			  if (EPSILON != pos) {
-// 				parse_table[nt][pos] = i;
-// 			  }
-// 			}
-// 		  } // end of for
-// 		}   // end of if - epsilon presence
-// 		else {
-// 		  parse_table[nt][pos] = i; // don't consider epsilon as terminal
-// 		}
-// 	  } // end of while - adding elements of first set
-// 	}   // end of for - traversing in all subparts of bitstring
-//   }     // end of for - travwersal in all rules
-// }
-
-int rightmost_set_bit(int* num){
-    int temp1 = (*num & (*num -1)); // Unsets rightmost bit of *num
-    int temp2 = temp1 ^ (*num); // temp2 contains only the rightmost set bit of *num
-    *num = temp1;
-    int lg2 = 0;
-    while(temp2){
-      lg2++;
-      temp2>>=1;
-    }
-    int position = INT_NUM_BITS -lg2;
-    return position;
-}
-
-tree_node* parse_input_source_code(FILE* source){
-  stack* main_stack = stack_init();
-  stack* aux_stack = stack_init();
+nAryTreeNode* parseInputSourceCode(FILE* source){
+  stack* main_stack = initializeStack();
+  stack* aux_stack = initializeStack();
   TOKEN tkn;
-
-  tree_node* root = create_tree_node();
+  bool is_error = false;
+  nAryTreeNode* root = createTreeNode();
   (root->sym).t = TK_DOLLAR;
-  (root->sym).is_terminal = true;
-
-  tree_node* start = create_tree_node();
+  (root->sym).isTerminal = true;
+  push(main_stack, root);
+  nAryTreeNode* start = createTreeNode();
   (start->sym).nt = program;
-  (start->sym).is_terminal = false;
+  (start->sym).isTerminal = false;
   push(main_stack,start);
+
+  set synSet=(set)malloc(sizeof(int)*SET_SIZE);
+  initializeSet(synSet);
+  addElement(synSet,TK_SEM);
+  addElement(synSet,TK_END);
+  addElement(synSet,TK_ENDRECORD);
+  addElement(synSet,TK_ENDUNION);
+  addElement(synSet,TK_ENDWHILE);
+  addElement(synSet,TK_ENDIF);
+  addElement(synSet,TK_ELSE);
 
   tkn = getNextToken(source);
   while(tkn.name == TK_COMMENT){
     tkn = getNextToken(source);
   }
-  while(main_stack->top>0){
-      tree_node* stTop = (tree_node*)pop(main_stack);
-      if((stTop->sym).is_terminal){
-        // if match
+  while(main_stack->head!=NULL){
+      nAryTreeNode* stTop = (nAryTreeNode*)pop(main_stack);
+      if(tkn.name == LEX_ERROR1){
+        printf("\033[0;31m");
+        printf("Line %d error: ", tkn.line_no);
+        printf("\033[0m");
+        printf("Unknown pattern <%s>\n",tkn.id);
+        tkn = getNextToken(source);
+        while(tkn.name == TK_COMMENT){
+          tkn = getNextToken(source);
+        }
+        if (tkn.name == TK_DOLLAR) {
+          return start;
+        }
+      }
+      else if(tkn.name == LEX_ERROR2){
+        printf("\033[0;31m");
+        printf("Line %d Error: ", tkn.line_no);
+        printf("\033[0m");
+        printf("Variable Identifier is longer than the prescribed length of 20 characters.\n");
+        tkn = getNextToken(source);
+        while(tkn.name == TK_COMMENT){
+          tkn = getNextToken(source);
+        }
+        if (tkn.name == TK_DOLLAR) {
+          printf("\033[0;34m");
+            printf("\nParsing Completed with errors\n");
+            printf("\033[0m");
+          return start;
+        }
+      }
+      if((stTop->sym).isTerminal){
         if(tkn.name == TK_DOLLAR){
           if((stTop->sym).t == tkn.name){
-            //parsing complete
-            printf("Prasing Complete\n");
+            if(!is_error){
+              printf("\033[0;32m");
+              printf("\nInput source code is syntactically correct....\n");
+              printf("\033[0m");
+            }
+            else{
+              printf("\033[0;34m");
+                printf("\nParsing Completed with errors\n");
+                printf("\033[0m");
+            }
+
             break;
           }
           else{
-            //Error
-            perror("Extra characters present in input\n");
+            is_error = true;
+            printf("\033[0;31m");
+            printf("Line %d Error:",tkn.line_no);
+            printf("\033[0m");
+            perror("Stack not empty but reached end of file\n");
             return start;
           }
         }
         if((stTop->sym).t == tkn.name){
-          //increment input pointer
           stTop->token.line_no = tkn.line_no;
           stTop->token.name = tkn.name;
           switch (tkn.name) {
@@ -465,75 +381,92 @@ tree_node* parse_input_source_code(FILE* source){
           while(tkn.name == TK_COMMENT){
             tkn = getNextToken(source);
           }
-          continue;
-        }
-        else if(tkn.name == LEX_ERROR1){
-          // error
-          perror("Parsing Error 1");
-          tkn = getNextToken(source);
-          while(tkn.name == TK_COMMENT){
-            tkn = getNextToken(source);
+          if (tkn.name == TK_DOLLAR) {
+            if(!is_error){
+              printf("\033[0;32m");
+              printf("\nInput source code is syntactically correct....\n");
+              printf("\033[0m");
+            }
+            else{
+              printf("\033[0;34m");
+                printf("\nParsing Completed with errors\n");
+                printf("\033[0m");
+            }
+            return start;
           }
           continue;
+        }
+        else{
+          is_error = true;
+          printf("\033[0;31m");
+          printf("Line %d Error: ", tkn.line_no);
+          printf("\033[0m");
+          printf("The token %s for lexeme %s does not match with the expected token %s\n", keyToToken[tkn.name], tkn.id, keyToToken[stTop->sym.t]);
         }
       }
       else{
-        //expand using parse table
         int ruleNo = parse_table[(stTop->sym).nt][tkn.name];
         if(ruleNo == NO_MATCHING_RULE){
-          if(set_find_elem(first_set[stTop->sym.nt],EPSILON)==false){
-            printf("Stack Top %s, Token %s at %d, Entered panic mode...\n", keyToNT[stTop->sym.nt], keyToToken[tkn.name], tkn.line_no);
+          if(findElement(firstSet[stTop->sym.nt],EPSILON)==false){
+            is_error = true;
+            printf("\033[0;31m");
+            printf("Line %d Error: ", tkn.line_no);
+            printf("\033[0m");
+            printf("Invalid  token %s encountered with value %s stack top %s\n",keyToToken[tkn.name], tkn.id, keyToNT[stTop->sym.nt]);
           }
-          while (set_find_elem(follow_set[stTop->sym.nt], tkn.name) == false) {
-      		tkn = getNextToken(source);
-      		if (tkn.name == TK_DOLLAR) {
-      		  // store_error(tkn.line_no, SYNTACTIC_ERROR,  "Panic Mode Error Recovery Not possible, Partial parse tree formed");
-      		  return start;
-      		}
+
+
+          while ((findElement(followSet[stTop->sym.nt], tkn.name) == false)&&(findElement(synSet,tkn.name)==false)) {
+            is_error = true;
+            printf("\033[0;31m");
+            printf("Line %d Error: ", tkn.line_no);
+            printf("\033[0m");
+            if(tkn.name == LEX_ERROR1)
+              printf("Unknown pattern <%s>\n",tkn.id);
+            else if(tkn.name == LEX_ERROR2)
+              printf("Variable Identifier is longer than the prescribed length of 20 characters.\n");
+            else{
+              printf("Invalid  token %s encountered with value ",keyToToken[tkn.name]);
+              switch (tkn.name) {
+                case TK_NUM: printf("%d ", tkn.num);break;
+                case TK_RNUM: printf("%.2f ", tkn.rnum); break;
+                default: printf("%s ", tkn.id);
+              }
+              printf("stack top %s\n", keyToNT[stTop->sym.nt]);
+            }
+
+
+            tkn = getNextToken(source);
+            while(tkn.name == TK_COMMENT){
+              tkn = getNextToken(source);
+            }
+        		if (tkn.name == TK_DOLLAR) {
+              printf("\033[0;34m");
+                printf("\nParsing Completed with errors\n");
+                printf("\033[0m");
+        		  return start;
+        		}
       	  }
         }
-        // else if(ruleNo == SYN_RULE){
-        //   //error. Enter panic mode
-        //
-        //   while(tkn.name!=TK_DOLLAR){
-        //     tkn = getNextToken(source);
-        //     while(tkn.name == TK_COMMENT){
-        //       tkn = getNextToken(source);
-        //     }
-        //     if(set_find_elem(follow_set[(stTop->sym).nt], tkn.name))
-        //       break;
-        //   }
-        //   if(tkn.name == TK_DOLLAR){
-        //     printf("Prasing completed\n");
-        //     break;
-        //   }
-        // }
         else{
-          // get the rule
-          cell rule = grammar[ruleNo];
+          ruleRHS rule = grammar[ruleNo];
           rhsnode* temp = rule.head;
 
-          // expand using that rule
           while(temp!=NULL){
-            tree_node* node = create_tree_node();
-            (node->sym).is_terminal = (temp->sym).is_terminal;
-            if((node->sym).is_terminal)
+            nAryTreeNode* node = createTreeNode();
+            (node->sym).isTerminal = (temp->sym).isTerminal;
+            if((node->sym).isTerminal)
               (node->sym).t = (temp->sym).t;
             else
               (node->sym).nt = (temp->sym).nt;
-            // don't add epsilon to stack
-            if((node->sym).is_terminal==false || (node->sym).t != EPSILON)
+            if((node->sym).isTerminal==false || (node->sym).t != EPSILON)
               push(aux_stack, node);
-            add_child(stTop, node);
+            addChild(stTop, node);
             temp=temp->next;
           }
 
-          // push contents of aux stack to main stack
-          /*
-          This is done to add the rule in order
-          */
-          while(aux_stack->top>0){
-            tree_node* cur = pop(aux_stack);
+          while(aux_stack->head!=NULL){
+            nAryTreeNode* cur = pop(aux_stack);
             push(main_stack, cur);
           }
 
@@ -543,129 +476,71 @@ tree_node* parse_input_source_code(FILE* source){
   return start;
 }
 
-// tree_node *parse_input_source_code(FILE *source) {
-//
-//   stack *main_stack = stack_init();
-//   stack *aux_stack = stack_init();
-//   tree_node *root = create_tree_node();
-//
-//   root->sym.nt = program;
-//   root->sym.is_terminal = false;
-//   push(main_stack, root); // push start symbol on stack
-//   TOKEN tkn = getNextToken(source);
-//   while(tkn.name == TK_COMMENT){
-//                 tkn = getNextToken(source);
-//               }
-//   while (true) {
-// 	// num_tree_nodes++;
-// 	tree_node *node = (tree_node *)pop(main_stack);
-//   // printf("%s %s\n",keyToToken[tkn.name], (node->sym).is_terminal?keyToToken[(node->sym).t]:keyToNT[(node->sym).nt]);
-// 	if ((node != NULL) && (node->sym).is_terminal == true) {
-// 	  if (node->sym.t == EPSILON) {
-// 		  node->token.name = EPSILON;
-// 		  strncpy(node->token.id, "epsilon", MAX_LEX_LEN);
-// 		continue;
-// 	  }
-// 	  if (node->sym.t != tkn.name) // terminal on top of stack does not match
-// 								   // with lookhead symbol
-// 	  {
-// 		// node->token.name = LEX_ERROR;
-// 		// char *err_msg = (char*) malloc(sizeof(char) * MAX_ERR_TYPE_STR_LEN);
-// 		// snprintf(err_msg, MAX_ERR_TYPE_STR_LEN,  "Expected " ANSI_COLOR_YELLOW "\"%s\"," ANSI_COLOR_RESET " Found " ANSI_COLOR_YELLOW "\"%s\" \n" ANSI_COLOR_RESET,terminal_string[node->sym.t], terminal_string[tkn.name]);
-//     //
-// 		// store_error(tkn.line_no, SYNTACTIC_ERROR, err_msg);
-//
-// 		printf("Popping token %s from stack top\n",
-// 			   keyToToken[node->sym.t]);
-// 		// tkn = get_next_token(source);
-// 		node = (tree_node *)pop(main_stack);
-// 		if (node == NULL) {
-// 		  // store_error(tkn.line_no, SYNTACTIC_ERROR, "Panic Mode Error Recovery Not possible, Partial parse tree formed");
-// 		  return root;
-// 		}
-// 		continue;
-// 	  } else { // la token and stack top match
-// 		node->token.line_no = tkn.line_no;
-// 		node->token.name = tkn.name;
-// 		switch (tkn.name) {
-// 		case TK_NUM:
-// 		  node->token.num = tkn.num;
-// 		  break;
-//
-// 		case TK_RNUM:
-// 		  node->token.rnum = tkn.rnum;
-// 		  break;
-//
-// 		default:
-// 		  // node->token.id.str = (char *)malloc(sizeof(MAX_LEXEME_LEN));
-// 		  strncpy(node->token.id, tkn.id, MAX_LEX_LEN);
-// 		}
-// 	  }
-//
-// 	  tkn = getNextToken(source);
-// 	  continue;
-// 	}
-//
-// 	if (tkn.name == LEX_ERROR1) {
-// 	  // store_error(tkn.line_no, LEXICAL_ERROR, tkn.id.str);
-//
-// 	  tkn = getNextToken(source);
-// 	  push(main_stack, node);
-// 	  continue;
-// 	}
-// 	if (node == NULL) {
-// 	  if (tkn.name != TK_DOLLAR) // rule not read completely but stack became empty
-// 	  {
-// 		// store_error(tkn.line_no, LEXICAL_ERROR, "Extra symbols in the source code");
-// 	  } else {
-// 		// printf("\nInput source code is now syntactically correct...........\n\n");
-// 	  }
-// 	  break;
-// 	}
-//
-// 	int rule_no = parse_table[node->sym.nt][tkn.name];
-// 	if (rule_no == NO_MATCHING_RULE) {
-// 	  // printf("[%s][%s]", non_terminal_string[node->sym.nt],
-// 			//  terminal_string[tkn.name]);
-// 	  // store_error(tkn.line_no, LEXICAL_ERROR, "No matching rule found in grammar");
-//
-// 	  // printf("Waiting for an element in follow of " ANSI_COLOR_YELLOW "\"%s\"\n" ANSI_COLOR_RESET, non_terminal_string[node->sym.nt]);
-//
-// 	  while (set_find_elem(follow_set[node->sym.nt], tkn.name) == false) {
-// 		tkn = getNextToken(source);
-// 		if (tkn.name == TK_DOLLAR) {
-// 		  // store_error(tkn.line_no, SYNTACTIC_ERROR,  "Panic Mode Error Recovery Not possible, Partial parse tree formed");
-// 		  return root;
-// 		}
-// 	  }
-// 	  printf("Token \"%s\" found at line number %d\n",
-// 			 keyToToken[tkn.name], tkn.line_no);
-// 	  // printf(ANSI_COLOR_GREEN "Resuming parsing\n" ANSI_COLOR_RESET);
-// 	  continue;
-// 	}
-// 	cell rule = grammar[rule_no];
-// 	rhsnode* rhs_ptr = rule.head;
-//
-// 	while (rhs_ptr != NULL) {
-// 	  tree_node *temp = create_tree_node();
-// 	  temp->parent = node;
-// 	  temp->sym = rhs_ptr->sym;
-// 	  add_child(node, temp);
-// 	  push(aux_stack, temp);
-// 	  rhs_ptr = rhs_ptr->next;
-// 	}
-//
-// 	tree_node *temp = (tree_node *)pop(aux_stack);
-//
-// 	while (temp != NULL) {
-// 	  push(main_stack, temp);
-// 	  temp = (tree_node *)pop(aux_stack);
-// 	}
-//   } // end of while(true) loop : parsing done
-//   return root;
-// }
+void printParseTree(nAryTreeNode* root, FILE* op){
+  if(root==NULL) return;
+  printParseTree(root->leftMostChild, op);
+  // if(root->sym.is_terminal)
+  char buf[MAX_LEX_LEN];
+  if(root->sym.isTerminal){
+    switch(root->token.name){
+      case TK_NUM: fprintf(op, "%-30d ", root->token.num);break;
+      case TK_RNUM: fprintf(op, "%-30.2f ", root->token.rnum);break;
+      default: fprintf(op, "%-30s ",root->token.id);
+    }
+  }
+  else{
+    fprintf(op,"-----                          ");
+  }
+  if(root->sym.isTerminal)
+    fprintf(op, "%-30d ", root->token.line_no);
+  else
+    fprintf(op, "-                             ");
+  if(root->sym.isTerminal)
+    fprintf(op, "%-30s ", keyToToken[root->sym.t]);
+  else{
+    fprintf(op, "-----                         ");
+  }
 
-void print_parse_tree(char* prefix, tree_node *root, bool isLeft) {
+  if(root->sym.isTerminal){
+    switch(root->token.name){
+      case TK_NUM: fprintf(op, "%-30d ", root->token.num);break;
+      case TK_RNUM: fprintf(op, "%-30.2f ", root->token.rnum);break;
+      default: fprintf(op, "-----                         ");
+    }
+  }
+  else{
+    fprintf(op, "-----                        ");
+  }
+
+  if(root->sym.isTerminal){
+    fprintf(op, "%-30s ",keyToToken[root->sym.t]);
+  }
+  else{
+    if(root->sym.nt == program)
+      fprintf(op, "ROOT                         ");
+    else
+      fprintf(op, "%-30s ", keyToNT[root->parent->sym.nt]);
+  }
+
+  if(root->numOfChildren==0){
+    fprintf(op, "yes                            ");
+  }
+  else
+    fprintf(op, "no                             ");
+
+  if(root->sym.isTerminal)
+    fprintf(op, "%-30s\n", keyToToken[root->sym.t]);
+  else{
+    fprintf(op, "%-30s\n",keyToNT[root->sym.nt]);
+  }
+  nAryTreeNode* temp = root->leftMostChild;
+  while(temp!=NULL){
+    temp=temp->brother;
+    printParseTree(temp, op);
+  }
+}
+
+void printParseTreePreorder(char* prefix, nAryTreeNode *root, bool isLeft) {
 	if(root==NULL) return;
   printf("%s",prefix);
   if(isLeft){
@@ -674,78 +549,76 @@ void print_parse_tree(char* prefix, tree_node *root, bool isLeft) {
   else{
     printf("'---");
   }
-  // printf("%d\n",root->value);
   char node[100];
-  if((root->sym).is_terminal){
+  if((root->sym).isTerminal){
     strcpy(node, keyToToken[(root->sym).t]);
   }
   else{
     strcpy(node, keyToNT[(root->sym).nt]);
   }
-  printf("%s %d\n",node, (root->token).line_no);
-
+  if((root->token).line_no>0)
+  printf("\033[0;33m");
+  printf("%s\n",node);
+  if((root->token).line_no>0)
+  printf("\033[0m");
   char suf1[] = "|   ";
   char suf2[] = "    ";
-  tree_node* cur = root->leftmost_child;
-  for(int i=0;i<root->num_child;i++){
+  nAryTreeNode* cur = root->leftMostChild;
+  for(int i=0;i<root->numOfChildren;i++){
     char pref [100];
     strcpy(pref, prefix);
     if(isLeft)
       strcat(pref, suf1);
     else strcat(pref, suf2);
     if(i==0){
-      print_parse_tree(pref, root->leftmost_child, true);
+      printParseTreePreorder(pref, root->leftMostChild, true);
     }
     else{
-      if(i==root->num_child-1)
-        print_parse_tree(pref, cur, false);
+      if(i==root->numOfChildren-1)
+        printParseTreePreorder(pref, cur, false);
       else
-        print_parse_tree(pref, cur, true);
+        printParseTreePreorder(pref, cur, true);
     }
-    cur = cur->sibling;
+    cur = cur->brother;
   }
 }
-void print_parse_table() {
+void printParseTable() {
   for (int i = 0; i < NUM_OF_NONTERMINALS; i++) {
 	for (int j = 0; j < NUM_OF_TERMINALS; j++) {
-    if(j!=TK_ASSIGNOP) continue;
 	  if (parse_table[i][j] != NO_MATCHING_RULE) {
 		printf("parse_table[%s][%s] : ", keyToNT[i], keyToToken[j]);
-		print_rule(parse_table[i][j]);
+		printRule(parse_table[i][j]);
 	  }
 	}
   }
 }
 
-void free_grammar()
+void freeGrammar()
 {
     int i;
-    for (i = 0; i < NUM_OF_RULES; i++) // ek loop me ek grammar rule ko free kar denge
+    for (i = 0; i < NUM_OF_RULES; i++)
     {
-        rhsnode* temp = grammar[i].head; // grammar ek cell type ka array he, jo ki humari grammar store karta he
-        // iss grammar me head points to first symbol on rhs of production rule
-        // rhsnode* ek struct he jo production rule ka rhs side store karta he(ek linked list ke form me)
+        rhsnode* temp = grammar[i].head;
         rhsnode* prev;
         while (temp != NULL)
         {
-            prev = temp->next; // free karne se pehle uske agle wale symbol ko access kar liya
-            free(temp);        // isko free kar diya
+            prev = temp->next;
+            free(temp);
             temp = prev;
         }
     }
 }
 
-void print_grammar()
+void printGrammar()
 {
     for (int i = 0; i < NUM_OF_RULES; i++)
     {
-        // print_rule(i); // ek ek karke rule no ke hisab se rules print kar rahe he. print_rule int type ka parameter accept karta he. jo ki rule no he.
-        int lhs = grammar[i].lhs;             // grammar cell type ka he, cell.lhs ek ntName naam ka enum he. isliye lhs ek int type define kiya he idhar
-        rhsnode* head = grammar[i].head;   // grammar.head rhsnode* type ka he. rhsnode* me symbol type ki field he. toh head->symbol pass kar denge as a parementer to print_symbol
-        printf("%s -> ", keyToNT[lhs]); // grammar ka lhs print kar diya
-        while (head != NULL)                        // ab grammar ka rhs print karna chalu kiya he
+        int lhs = grammar[i].lhs;
+        rhsnode* head = grammar[i].head;
+        printf("%s -> ", keyToNT[lhs]);
+        while (head != NULL)
         {
-            print_symbol(head->sym); // head grammar ke rhs ki linked list ko point kar rha he. isko use karke uss rule ka rhs print kar sakte he
+            printSymbol(head->sym);
             printf(" ");
             head = head->next;
         }
@@ -753,32 +626,32 @@ void print_grammar()
     }
 }
 
-void print_rule(int i){
-  int lhs = grammar[i].lhs;             // grammar cell type ka he, cell.lhs ek ntName naam ka enum he. isliye lhs ek int type define kiya he idhar
-  rhsnode* head = grammar[i].head;   // grammar.head rhsnode* type ka he. rhsnode* me symbol type ki field he. toh head->symbol pass kar denge as a parementer to print_symbol
-  printf("%s -> ", keyToNT[lhs]); // grammar ka lhs print kar diya
-  while (head != NULL)                        // ab grammar ka rhs print karna chalu kiya he
+void printRule(int i){
+  int lhs = grammar[i].lhs;
+  rhsnode* head = grammar[i].head;
+  printf("%s -> ", keyToNT[lhs]);
+  while (head != NULL)
   {
-      print_symbol(head->sym); // head grammar ke rhs ki linked list ko point kar rha he. isko use karke uss rule ka rhs print kar sakte he
+      printSymbol(head->sym);
       printf(" ");
       head = head->next;
   }
   printf("\n");
 }
 
-void print_symbol(symbol sym)
-{                                // symbol yaa toh terminal hoga yaa ntName
-    if (sym.is_terminal != true) // agar non_terminal he
+void printSymbol(symbol sym)
+{
+    if (sym.isTerminal != true)
     {
-        printf("%s", keyToNT[sym.nt]); // ntName ek enum he, toh symbol.nt ek number return karega, jisko  use karke ntName string array ko index kar sakte he
+        printf("%s", keyToNT[sym.nt]);
     }
-    else // agar terminal he
+    else
     {
-        printf("%s", keyToToken[sym.t]); // terminal "tokenname" type ka he. tokename ek enum he. Toh sym.t ek number return karega. terminal string ~ keytotoken
+        printf("%s", keyToToken[sym.t]);
     }
 }
 
-void print_first_sets(){
+void printFirstSets(){
   FILE * fp = fopen("first.txt", "w");
   if(fp==NULL){
     perror("fopen error !!");
@@ -790,13 +663,9 @@ void print_first_sets(){
         fprintf(fp, "%s => {",keyToNT[i]);
 
         for(int j=0;j<SET_SIZE;j++){
-
-            for(int k=0;k<INT_NUM_BITS;k++){
-                if(set_find_elem(first_set[i],j*INT_NUM_BITS+k)==true){
-                    fprintf(fp, "%s ,  ",keyToToken[j * INT_NUM_BITS + k]);
-                }
+            if(findElement(firstSet[i],j)==true){
+                fprintf(fp, "%s ,  ",keyToToken[j]);
             }
-
         }
 
         fprintf(fp,"  }\n");
@@ -805,7 +674,7 @@ void print_first_sets(){
     fclose(fp);
 }
 
-void print_follow_sets(){
+void printFollowSets(){
 
   FILE * fp = fopen("follow.txt", "w");
   if(fp==NULL){
@@ -814,18 +683,12 @@ void print_follow_sets(){
   }
     for(int i=0;i<NUM_OF_NONTERMINALS;i++){
 
-        fprintf(fp,"follow_set of (%s)=>{",keyToNT[i]);
+        fprintf(fp,"follow set of (%s)=>{",keyToNT[i]);
 
         for(int j=0;j<SET_SIZE;j++){
-
-            for(int k=0;k<INT_NUM_BITS;k++){
-                if(set_find_elem(follow_set[i],j*INT_NUM_BITS+k)==true){
-                    fprintf(fp,"%s,",keyToToken[j * INT_NUM_BITS + k]);
-                }
+            if(findElement(followSet[i],j)==true){
+                fprintf(fp,"%s,",keyToToken[j]);
             }
-
-
-
         }
 
          fprintf(fp,"}\n");

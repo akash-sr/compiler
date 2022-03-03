@@ -1,13 +1,26 @@
-#include "headerFiles/driver.h"
-#include "headerFiles/lexer.h"
-#include "headerFiles/parser.h"
+/*
+Group 10
+Name: Hemant Singh Sisodiya ID: 2019A7PS0070P
+Name: Akash S Revankar      ID: 2019A7PS0294P
+Name: Harsh Butani          ID: 2019A7PS0022P
+Name: Siddharth Upadhyay    ID: 2019A7PS0033P
+Name: Mohit Sharma          ID: 2019A7PS0100P
+*/
+
+
+
+#include "driver.h"
+#include "lexer.h"
+#include "parser.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
 void printMenu(){
+	printf("\033[0;32m");
 	printf("\tPress option for the defined task\n");
+	printf("\033[0m");
 	printf("0: Exit\n");
 	printf("1: Remove Comments\n");
 	printf("2: Print Token list\n");
@@ -19,28 +32,24 @@ void printMenu(){
 
 void generateTokenMap() {
 
-	// printf("generatetokenmap ki first line\n");
 	FILE *fp = fopen("./tokens.txt", "r");
-	// printf("tokens.txt opened successfully\n");
 
 	fseek(fp, 0, SEEK_END);
-	// printf("seekend ho gaya\n");
 	int fileLength = ftell(fp);
-	// printf("ftell ho gaya\n");
+
 	fseek(fp, 0, SEEK_SET);
-	// printf("seekset ho gaya\n");
 
 
 	char *tokens = malloc(sizeof(char) * (fileLength + 1));
-	// printf("\n token malloc ho gaya\n");
+
   	if (tokens == NULL) {
-		perror("terminal_string filling failed\n");
+		perror("terminal string filling failed\n");
 		exit(1);
 	}
 
 	fread(tokens, sizeof(char), fileLength, fp);
 	tokens[fileLength] = '\0';
-	// printf("\n tokens ended succesfully \n");
+
 	fclose(fp);
 
 	char *tok = NULL;
@@ -51,36 +60,28 @@ void generateTokenMap() {
 	while((tok = strtok(NULL, ", \n"))){
 		strncpy(keyToToken[key++], tok, MAX_SYMBOL_LENGTH);
 	}
-	//printf("\n debug statement \n");
 
 	free(tokens);
 }
 
 void generateNTMap() {
 
-	// printf("generatetokenmap ki first line\n");
 	FILE *fp = fopen("./nonTerminals.txt", "r");
-	// printf("tokens.txt opened successfully\n");
 
 	fseek(fp, 0, SEEK_END);
-	// printf("seekend ho gaya\n");
 	int fileLength = ftell(fp);
-	// printf("ftell ho gaya\n");
 	fseek(fp, 0, SEEK_SET);
-	// printf("seekset ho gaya\n");
 
 
 	char *nonTerminals = malloc(sizeof(char) * (fileLength + 1));
-	// printf("\n token malloc ho gaya\n");
   	if (nonTerminals == NULL) {
-		perror("terminal_string filling failed\n");
+		perror("terminal string filling failed\n");
 		exit(1);
 	}
 
 	fread(nonTerminals, sizeof(char), fileLength, fp);
 	nonTerminals[fileLength] = '\0';
-	// printf("\n tokens ended succesfully \n");
-	fclose(fp);
+		fclose(fp);
 
 	char *nt = NULL;
 
@@ -90,33 +91,32 @@ void generateNTMap() {
 	while((nt = strtok(NULL, ", \n"))){
 		strncpy(keyToNT[key++], nt, MAX_SYMBOL_LENGTH);
 	}
-	//printf("\n debug statement \n");
 
 	free(nonTerminals);
 }
 
 
 int main(int argc, char* argv[]){
-	// printf("first line\n");
-	if(argc!=2){
-		perror("Invalid Input!!\n");
-		exit(1);
+	if(argc!=3){
+		printf("Invalid Input: Run as ./stage1exe <source> <outfile>\n");
+		exit(0);
 	}
+	printf("Group 10\n");
+	printf("(a)Status:\n");
+	printf("(b)FIRST and FOLLOW sets automated\n");
+	printf("(c)Both lexical and syntax analysis modules implemented\n");
+	printf("(d)Modules work with test cases: testcase2.txt, testcase3.txt, testcase4.txt, testcase5.txt\n");
+	printf("(e)Lexical analysis works with testcase1.txt and testcase6.txt as well but syntax analysis gives different errors\n");
+	char sourceFile[20];
+	char outputFile[20];
 
-	//printf("generateTokenMap k just pehle\n");
+	strcpy(sourceFile, argv[1]);
+	strcpy(outputFile, argv[2]);
+
+	FILE *source, *output, *fp;
 
 	generateTokenMap();
 	generateNTMap();
-	//printf("generateTokenMap sahi se ho gaya\n");
-
-	char sourceFile[10];
-	strncpy(sourceFile, argv[1], 10);
-	FILE *source = fopen(sourceFile, "r");
-
-	if(source==NULL){
-		printf("Error opening file\n");
-	}
-
 	int choice;
 
 	while(true){
@@ -128,78 +128,109 @@ int main(int argc, char* argv[]){
 			case 0:;
 				exit(0);
 			case 1:;
-				char cleanFile[20] = "cleanFile.txt";
+				source = fopen(sourceFile, "r");
+				output = fopen(outputFile, "w");
+				if(source==NULL || output==NULL){
+					printf("Error opening file\n");
+					return 0;
+				}
 				initializeLexer(source);
-				removeComments(sourceFile, cleanFile);
+				removeComments(sourceFile);
+				fclose(source);
+				fclose(output);
 				break;
 			case 2:;
+
+
+				source = fopen(sourceFile, "r");
+				output = fopen(outputFile, "w");
+				if(source==NULL||output==NULL){
+					printf("Error opening file\n");
+					return 0;
+				}
 			  initializeLexer(source);
 				getStream(source);
+				fclose(source);
+				fclose(output);
 				break;
 			case 3:;
-				initializeLexer(source);
-				parser_init();
 
-				FILE* fp = fopen("grammar.txt", "r");
+				source = fopen(sourceFile, "r");
+				output = fopen(outputFile, "w");
+				if(source==NULL||output==NULL){
+					printf("Error opening file\n");
+					return 0;
+				}
+				initializeLexer(source);
+				initializeParser();
+				fp = fopen("grammar.txt", "r");
 				if(fp == NULL){
 					perror("fopen");
 				}
-
-				grammar_fill(fp);
-				populate_first_sets();
-				// printf("first set calculate\n");
-				// print_first_sets();
-				populate_follow_sets();
-				// print_follow_sets();
-
-
-				create_parse_table();
-				// print_parse_table();
-				tree_node* ast = parse_input_source_code(source);
+				populateGrammar(fp);
+				computeFirstSets();
+				computeFollowSets();
+				generateParseTable();
+				nAryTreeNode* ast = parseInputSourceCode(source);
 				if(ast==NULL){
 					printf("Empty parse tree\n");
 				}
 
 				char prefix[10000] = "";
-			  print_parse_tree(prefix, ast, true);
-
-			// 	// print_parse_tree(ast);
-				free_grammar();
+				printf("\033[0;36m");
+				printf("\nPrinting Pre-Order traversal of parse tree on console\n");
+				printf("\033[0m");
+				printParseTreePreorder(prefix, ast, true);
+				printf("\033[0;36m");
+				printf("\nStoring In-Order traversal of parse tree in %s\n",outputFile);
+				printf("\033[0m");
+				char col1[] = "Lexeme CurrentNode";
+				char col2[] = "Line no";
+				char col3[] = "Token name";
+				char col4[] = "ValueIfNumber";
+				char col5[] = "ParentNodeSymbol";
+				char col6[] = "IsLeafNode";
+				char col7[] = "NodeSymbol";
+				fprintf(output, "%-30s %-30s %-30s %-30s %-30s %-30s %-30s\n", col1, col2, col3, col4, col5, col6, col7);
+				printParseTree(ast, output);
+				freeGrammar();
 				fclose(fp);
+				fclose(source);
+				fclose(output);
 				break;
 			case 4:;
 								clock_t start_time, end_time;
                 double total_CPU_time, total_CPU_time_in_seconds;
                 start_time = clock();
+								source = fopen(sourceFile, "r");
+								output = fopen(outputFile, "w");
+								if(source==NULL||output==NULL){
+									printf("Error opening file\n");
+									return 0;
+								}
 								initializeLexer(source);
-								parser_init();
+								initializeParser();
 
-								FILE* fp2 = fopen("grammar.txt", "r");
-								if(fp2 == NULL){
+								fp = fopen("grammar.txt", "r");
+								if(fp == NULL){
 									perror("fopen");
 								}
 
-								grammar_fill(fp2);
-								populate_first_sets();
-								// printf("first set calculate\n");
-								// print_first_sets();
-								populate_follow_sets();
-								// print_follow_sets();
+								populateGrammar(fp);
+								computeFirstSets();
+								computeFollowSets();
 
 
-								create_parse_table();
-								// print_parse_table();
-								tree_node* ast2 = parse_input_source_code(source);
+								generateParseTable();
+								nAryTreeNode* ast2 = parseInputSourceCode(source);
 								if(ast2==NULL){
 									printf("Empty parse tree\n");
 								}
 
-								// char pref[10000] = "";
-							  // print_parse_tree(pref, ast2, true);
-
-							// 	// print_parse_tree(ast);
-								free_grammar();
-								fclose(fp2);
+								freeGrammar();
+								fclose(fp);
+								fclose(source);
+								fclose(output);
                 end_time = clock();
                 total_CPU_time = (double) (end_time - start_time);
                 total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;

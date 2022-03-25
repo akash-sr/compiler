@@ -1,20 +1,26 @@
+/*
+Group 10
+Name: Hemant Singh Sisodiya ID: 2019A7PS0070P
+Name: Akash S Revankar      ID: 2019A7PS0294P
+Name: Harsh Butani          ID: 2019A7PS0022P
+Name: Siddharth Upadhyay    ID: 2019A7PS0033P
+Name: Mohit Sharma          ID: 2019A7PS0100P
+*/
+
 #ifndef LEXERDEF_H
 #define LEXERDEF_H
 
-#include "../headerFiles/hashTable.h"
-#include "../headerFiles/driver.h"
+#include "hashtable.h"
+#include "driver.h"
 
 #define MAX_BUFFER_SIZE 800
 #define MAX_FUNID_LEN 30
 #define MAX_TKID_LEN 20
 
 typedef enum {
-#include "../tokens.txt"
+#include "tokens.txt"
 } tokenName;
 
-typedef enum{
-  #include "../nonTerminals.txt"
-} ntName;
 
 typedef struct token {
   tokenName name;

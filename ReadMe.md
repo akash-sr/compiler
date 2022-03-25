@@ -1,2 +1,1 @@
-# compiler-project
-CS F301 Compiler Construction
+# CS F301 Compiler Construction

@@ -12,4 +12,4 @@ compile:
 	gcc -o stage1exe driver.c parser.c lexer.c hashtable.c set.c stack.c tree.c
 
 clean:
-	rm -rf compile
+	rm -rf stage1exe

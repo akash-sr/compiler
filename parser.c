@@ -556,10 +556,10 @@ void printParseTreePreorder(char* prefix, nAryTreeNode *root, bool isLeft) {
   else{
     strcpy(node, keyToNT[(root->sym).nt]);
   }
-  if((root->token).line_no>0)
+  if((root->sym).isTerminal)
   printf("\033[0;33m");
   printf("%s\n",node);
-  if((root->token).line_no>0)
+  if((root->sym).isTerminal)
   printf("\033[0m");
   char suf1[] = "|   ";
   char suf2[] = "    ";

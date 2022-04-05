@@ -12,6 +12,7 @@ Name: Mohit Sharma          ID: 2019A7PS0100P
 #include "driver.h"
 #include "lexer.h"
 #include "parser.h"
+#include "ast.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,6 +27,7 @@ void printMenu(){
 	printf("2: Print Token list\n");
 	printf("3: Parse\n");
 	printf("4: Time taken\n");
+	printf("5: AST\n");
 	printf("-------------------------------------\n");
 	printf("Enter your choice:");
 }
@@ -172,15 +174,19 @@ int main(int argc, char* argv[]){
 				computeFollowSets();
 				generateParseTable();
 				nAryTreeNode* ast = parseInputSourceCode(source);
+				printf("Parse Tree\n");
+				char prefix[10000] = "";
+				printParseTreePreorder(prefix, ast, true);
 				if(ast==NULL){
 					printf("Empty parse tree\n");
 				}
-
-				char prefix[10000] = "";
+				
+				ast = buildAST(ast);
+				char prefix1[10000] = "";
 				printf("\033[0;36m");
 				printf("\nPrinting Pre-Order traversal of parse tree on console\n");
 				printf("\033[0m");
-				printParseTreePreorder(prefix, ast, true);
+				printParseTreePreorder(prefix1, ast, true);
 				printf("\033[0;36m");
 				printf("\nStoring In-Order traversal of parse tree in %s\n",outputFile);
 				printf("\033[0m");
@@ -192,14 +198,15 @@ int main(int argc, char* argv[]){
 				char col6[] = "IsLeafNode";
 				char col7[] = "NodeSymbol";
 				fprintf(output, "%-30s %-30s %-30s %-30s %-30s %-30s %-30s\n", col1, col2, col3, col4, col5, col6, col7);
-				printParseTree(ast, output);
+				// printParseTreePreorder(prefix1, ast, true);
+				printParseTree(ast, output);//printParsetree me dikka
 				freeGrammar();
 				fclose(fp);
 				fclose(source);
 				fclose(output);
 				break;
 			case 4:;
-								clock_t start_time, end_time;
+				clock_t start_time, end_time;
                 double total_CPU_time, total_CPU_time_in_seconds;
                 start_time = clock();
 								source = fopen(sourceFile, "r");
@@ -236,6 +243,51 @@ int main(int argc, char* argv[]){
                 total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;
                 printf("total CPU time = %f \ntotal CPU time in seconds = %f\n",total_CPU_time,total_CPU_time_in_seconds);
                 break;
+			// case 5:;
+			// 	source = fopen(sourceFile, "r");
+			// 	output = fopen(outputFile, "w");
+			// 	if(source==NULL||output==NULL){
+			// 		printf("Error opening file\n");
+			// 		return 0;
+			// 	}
+			// 	initializeLexer(source);
+			// 	initializeParser();
+			// 	fp2 = fopen("grammar.txt", "r");
+			// 	if(fp2 == NULL){
+			// 		perror("fopen");
+			// 	}
+			// 	populateGrammar(fp);
+			// 	computeFirstSets();
+			// 	computeFollowSets();
+			// 	generateParseTable();
+			// 	nAryTreeNode* ast2 = parseInputSourceCode(source);
+			// 	if(ast2==NULL){
+			// 		printf("Empty parse tree\n");
+			// 	}
+
+			// 	char prefix2[10000] = "";
+			// 	printf("\033[0;36m");
+			// 	printf("\nPrinting Pre-Order traversal of abstract syntax tree on console\n");
+			// 	printf("\033[0m");
+			// 	ast2 = buildAST(ast2);
+			// 	printParseTreePreorder(ast2);
+			// 	printf("\033[0;36m");
+			// 	printf("\nStoring In-Order traversal of abstract syntax tree in %s\n",outputFile);
+			// 	printf("\033[0m");
+			// 	char col1[] = "Lexeme CurrentNode";
+			// 	char col2[] = "Line no";
+			// 	char col3[] = "Token name";
+			// 	char col4[] = "ValueIfNumber";
+			// 	char col5[] = "ParentNodeSymbol";
+			// 	char col6[] = "IsLeafNode";
+			// 	char col7[] = "NodeSymbol";
+			// 	fprintf(output, "%-30s %-30s %-30s %-30s %-30s %-30s %-30s\n", col1, col2, col3, col4, col5, col6, col7);
+			// 	printParseTree(ast2, output);
+			// 	freeGrammar();
+			// 	fclose(fp2);
+			// 	fclose(source);
+			// 	fclose(output);
+				// break;
 			default:;
 				printf("Lite\n");
 				break;

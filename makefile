@@ -9,7 +9,7 @@
 all: compile
 
 compile:
-	gcc -o stage1exe driver.c parser.c lexer.c hashtable.c set.c stack.c tree.c
+	gcc -o stage1exe driver.c parser.c lexer.c hashtable.c set.c stack.c tree.c ast.c
 
 clean:
-	rm -rf stage1exe
+	rm -rf compile

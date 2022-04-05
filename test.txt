@@ -1,0 +1,4 @@
+_main
+	type int : b5;
+	return;
+end

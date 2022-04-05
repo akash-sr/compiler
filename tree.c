@@ -20,6 +20,7 @@ nAryTreeNode* createTreeNode(){
   newNode->leftMostChild = NULL;
   newNode->rightMostChild = NULL;
   newNode->numOfChildren = 0;
+  // newNode->numASTChildren = 0;
   return newNode;
 }
 

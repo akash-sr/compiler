@@ -22,6 +22,7 @@ typedef struct NARYTREENODE{
   symbol sym;
   TOKEN token;
   int numOfChildren;
+  // int numASTChildren;
 }nAryTreeNode;
 
 nAryTreeNode* createTreeNode();

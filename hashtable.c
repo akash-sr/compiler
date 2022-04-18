@@ -50,6 +50,22 @@ void insertTable(hash_entry* table, char* lexeme, int value){
     *(int*)(table[hash_value].value) = value;
 }
 
+void insertTablePtr(hash_entry* table, char* lexeme, void* value){
+    int hash_value = calculateHash(lexeme);
+    int probe_no = 0;
+    while(table[hash_value].present == true && probe_no < HASHTABLE_SIZE){
+        hash_value = (hash_value + 1) % HASHTABLE_SIZE;
+        probe_no++;
+    }
+    if(table[hash_value].present == true){
+        printf("Hash Table full, cannot insert\n");
+        return;
+    }
+    table[hash_value].present = true;
+    strncpy(table[hash_value].lexeme, lexeme, MAX_LEX_LEN);
+    table[hash_value].value = value;
+}
+
 bool searchTable(hash_entry* table, char* lexeme){
     int hash_value = calculateHash(lexeme);
     int probe_no = 0;
@@ -74,4 +90,26 @@ int searchHashTable(hash_entry* table, char* lexeme){
         probe_no++;
     }
     return KEY_NOT_FOUND;
+}
+
+void* searchHashTablePtr(hash_entry* table, char* lexeme){
+    int hash_value = calculateHash(lexeme);
+    int probe_no = 0;
+    while(table[hash_value].present == true && probe_no < HASHTABLE_SIZE){
+        if(strcmp(table[hash_value].lexeme, lexeme) == 0){
+            return table[hash_value].value;
+        }
+        hash_value = (hash_value + 1) % HASHTABLE_SIZE;
+        probe_no++;
+    }
+    return NULL;
+}
+
+SymbolTable* initSymbolTable(){
+  SymbolTable* symTab = (SymbolTable*) malloc(sizeof(SymbolTable));
+  initTable(symTab->table);
+  symTab->parentSymTab=NULL;
+  symTab->leftmostChildSymTab=NULL;
+  symTab->rightmostChildSymTab=NULL;
+  symTab->brotherSymTab=NULL;
 }

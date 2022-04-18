@@ -7,9 +7,8 @@
 % atleast one input parameter
 _readMarks input parameter list[int b7]
 output parameter list [ record #marks b3c45];
-	read(b3c45.maths);
-	read(b3c45.physics);
-	read(b3c45.chemistry);
+	b3c45.maths <--- 4.55;
+	b3c45.physics <--- 56.66;
 	return [b3c45];
 end
 % Notice here that  your compiler recognizes the type definition of marks even before it is

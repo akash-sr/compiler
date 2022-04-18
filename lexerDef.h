@@ -13,7 +13,7 @@ Name: Mohit Sharma          ID: 2019A7PS0100P
 #include "hashtable.h"
 #include "driver.h"
 
-#define MAX_BUFFER_SIZE 800
+#define MAX_BUFFER_SIZE 100000
 #define MAX_FUNID_LEN 30
 #define MAX_TKID_LEN 20
 

@@ -20,6 +20,11 @@ nAryTreeNode* createTreeNode(){
   newNode->leftMostChild = NULL;
   newNode->rightMostChild = NULL;
   newNode->numOfChildren = 0;
+  newNode->extraArguments = NULL;
+  newNode->visited = false;
+  newNode->scopeSymTab = NULL;
+  newNode->enclFunTypePtr = NULL;
+  newNode->token.line_no = 0;
   // newNode->numASTChildren = 0;
   return newNode;
 }
@@ -35,4 +40,15 @@ void addChild(nAryTreeNode* parent, nAryTreeNode* child){
   }
   parent->numOfChildren = parent->numOfChildren + 1;
   child->parent = parent;
+}
+
+nAryTreeNode* getNthChild(nAryTreeNode* node, int n){
+  nAryTreeNode* temp = node->leftMostChild;
+  for(int i=0;i<n-1;i++){
+    if(temp)
+      temp=temp->brother;
+    else
+      return NULL;
+  }
+  return temp;
 }

@@ -12,6 +12,7 @@ output parameter list[int d5];
 	type int : d6;
 	type int : d7 :global;
 	d6<---d2+d3+d4;
+	[d5]<---call _randomfunction with parameters [d6,d7];
 	return [d5];
 end
 
@@ -36,3 +37,6 @@ end
 % Note that the machine on which the code is run supports the integer values to be negative 
 % and these values can participate in any computation as integer
 % NOTE: If you implemened the associativity from right  to left, mention that while printing the output
+
+
+

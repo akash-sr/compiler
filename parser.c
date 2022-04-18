@@ -478,60 +478,67 @@ nAryTreeNode* parseInputSourceCode(FILE* source){
 
 void printParseTree(nAryTreeNode* root, FILE* op){
   if(root==NULL) return;
+  // printf("yes\n");
+  // if(root->sym.isTerminal){
+  //   printf("%s\n", keyToToken[root->sym.t]);
+  // }
+  // else
+  //   printf("%s\n", keyToNT[root->sym.nt]);
   printParseTree(root->leftMostChild, op);
   // if(root->sym.is_terminal)
+
   char buf[MAX_LEX_LEN];
   if(root->sym.isTerminal){
     switch(root->token.name){
-      case TK_NUM: fprintf(op, "%-30d ", root->token.num);break;
-      case TK_RNUM: fprintf(op, "%-30.2f ", root->token.rnum);break;
-      default: fprintf(op, "%-30s ",root->token.id);
+      case TK_NUM: fprintf(stdout, "%-30d ", root->token.num);break;
+      case TK_RNUM: fprintf(stdout, "%-30.2f ", root->token.rnum);break;
+      default: fprintf(stdout, "%-30s ",root->token.id);
     }
   }
   else{
-    fprintf(op,"-----                          ");
+    fprintf(stdout,"-----                          ");
   }
   if(root->sym.isTerminal)
-    fprintf(op, "%-30d ", root->token.line_no);
+    fprintf(stdout, "%-30d ", root->token.line_no);
   else
-    fprintf(op, "-                             ");
+    fprintf(stdout, "-                             ");
   if(root->sym.isTerminal)
-    fprintf(op, "%-30s ", keyToToken[root->sym.t]);
+    fprintf(stdout, "%-30s ", keyToToken[root->sym.t]);
   else{
-    fprintf(op, "-----                         ");
+    fprintf(stdout, "-----                         ");
   }
 
   if(root->sym.isTerminal){
     switch(root->token.name){
-      case TK_NUM: fprintf(op, "%-30d ", root->token.num);break;
-      case TK_RNUM: fprintf(op, "%-30.2f ", root->token.rnum);break;
-      default: fprintf(op, "-----                         ");
+      case TK_NUM: fprintf(stdout, "%-30d ", root->token.num);break;
+      case TK_RNUM: fprintf(stdout, "%-30.2f ", root->token.rnum);break;
+      default: fprintf(stdout, "-----                         ");
     }
   }
   else{
-    fprintf(op, "-----                        ");
+    fprintf(stdout, "-----                        ");
   }
 
   if(root->sym.isTerminal){
-    fprintf(op, "%-30s ",keyToToken[root->sym.t]);
+    fprintf(stdout, "%-30s ",keyToToken[root->sym.t]);
   }
   else{
     if(root->sym.nt == program)
-      fprintf(op, "ROOT                         ");
+      fprintf(stdout, "ROOT                         ");
     else
-      fprintf(op, "%-30s ", keyToNT[root->parent->sym.nt]);
+      fprintf(stdout, "%-30s ", keyToNT[root->parent->sym.nt]);
   }
 
   if(root->numOfChildren==0){
-    fprintf(op, "yes                            ");
+    fprintf(stdout, "yes                            ");
   }
   else
-    fprintf(op, "no                             ");
+    fprintf(stdout, "no                             ");
 
   if(root->sym.isTerminal)
-    fprintf(op, "%-30s\n", keyToToken[root->sym.t]);
+    fprintf(stdout, "%-30s\n", keyToToken[root->sym.t]);
   else{
-    fprintf(op, "%-30s\n",keyToNT[root->sym.nt]);
+    fprintf(stdout, "%-30s\n",keyToNT[root->sym.nt]);
   }
   nAryTreeNode* temp = root->leftMostChild;
   while(temp!=NULL){
@@ -556,10 +563,10 @@ void printParseTreePreorder(char* prefix, nAryTreeNode *root, bool isLeft) {
   else{
     strcpy(node, keyToNT[(root->sym).nt]);
   }
-  if((root->token).line_no>0)
+  if((root->sym).isTerminal)
   printf("\033[0;33m");
   printf("%s\n",node);
-  if((root->token).line_no>0)
+  if((root->sym).isTerminal)
   printf("\033[0m");
   char suf1[] = "|   ";
   char suf2[] = "    ";

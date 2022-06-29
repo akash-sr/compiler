@@ -108,24 +108,24 @@ void runParser(char* sourceFile, char* outputFile){
 	if(pt==NULL){
 		printf("Empty parse tree\n");
 	}
-	// printf("\033[0;36m");
-	// printf("\nPrinting Pre-Order traversal of parse tree on console\n");
-	// printf("\033[0m");
-	// printParseTreePreorder(prefix, pt, true);
-	// printf("AST Print hua");
 	printf("\033[0;36m");
-	printf("\nPrinting In-Order traversal of parse tree\n");
+	printf("\nPrinting Pre-Order traversal of parse tree on console\n");
 	printf("\033[0m");
-	char col1[] = "Lexeme CurrentNode";
-	char col2[] = "Line no";
-	char col3[] = "Token name";
-	char col4[] = "ValueIfNumber";
-	char col5[] = "ParentNodeSymbol";
-	char col6[] = "IsLeafNode";
-	char col7[] = "NodeSymbol";
-	fprintf(stdout, "%-30s %-30s %-30s %-30s %-30s %-30s %-30s\n", col1, col2, col3, col4, col5, col6, col7);
+	printParseTreePreorder(prefix, pt, true);
+	// printf("AST Print hua");
+	// printf("\033[0;36m");
+	// printf("\nPrinting In-Order traversal of parse tree\n");
+	// printf("\033[0m");
+	// char col1[] = "Lexeme CurrentNode";
+	// char col2[] = "Line no";
+	// char col3[] = "Token name";
+	// char col4[] = "ValueIfNumber";
+	// char col5[] = "ParentNodeSymbol";
+	// char col6[] = "IsLeafNode";
+	// char col7[] = "NodeSymbol";
+	// fprintf(stdout, "%-30s %-30s %-30s %-30s %-30s %-30s %-30s\n", col1, col2, col3, col4, col5, col6, col7);
 	// // printParseTreePreorder(prefix1, ast, true);
-	printParseTree(pt, output);//printParsetree me dikka
+	// printParseTree(pt, output);//printParsetree me dikka
 	// printf("AST File me dala");
 	freeGrammar();
 	fclose(fp);
